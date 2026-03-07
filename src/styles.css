@@ -8,9 +8,38 @@ body {
   max-width: 1400px;
 }
 
+.payload-window {
+  position: sticky;
+  top: 12px;
+}
+
+.payload-window.minimized {
+  width: 3.25rem;
+}
+
+.payload-restore {
+  width: 100%;
+  min-height: 220px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  border: none;
+  border-radius: 0.375rem;
+}
+
 .prompt-editor {
   min-height: 140px;
   resize: vertical;
+}
+
+.payload-preview {
+  max-height: min(70vh, 620px);
+  overflow: auto;
+}
+
+.genre-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 .sequence {
@@ -39,6 +68,17 @@ body {
 
 .image-frame {
   position: relative;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  line-height: 1;
 }
 
 .emotion-tag {
@@ -79,4 +119,20 @@ body {
 .add-card .plus {
   font-size: 3rem;
   line-height: 1;
+}
+
+@media (max-width: 991.98px) {
+  .payload-window {
+    position: static;
+  }
+
+  .payload-window.minimized {
+    width: 100%;
+  }
+
+  .payload-restore {
+    min-height: auto;
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
 }

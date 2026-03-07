@@ -1,28 +1,33 @@
-const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
-const ELEVENLABS_MODEL = import.meta.env.VITE_ELEVENLABS_MODEL ?? "eleven_multilingual_v2";
+import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import type { ElevenLabsMusicPrompt } from "./utils";
 
-export async function sendPromptToElevenLabs(prompt: string): Promise<string> {
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+
+type ElevenLabsMusicOptions = {
+  forceInstrumental?: boolean;
+};
+
+export async function sendPromptToElevenLabs(
+  payload: ElevenLabsMusicPrompt,
+  options?: ElevenLabsMusicOptions
+): Promise<string> {
   if (!ELEVENLABS_API_KEY) {
     throw new Error("Missing ElevenLabs API key");
   }
 
-  const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/JBFqnCBsd6RMkjVDRZzb", {
-    method: "POST",
-    headers: {
-      "xi-api-key": ELEVENLABS_API_KEY,
-      "Content-Type": "application/json",
-      Accept: "audio/mpeg"
-    },
-    body: JSON.stringify({
-      text: prompt,
-      model_id: ELEVENLABS_MODEL
-    })
+  const client = new ElevenLabsClient({
+    apiKey: ELEVENLABS_API_KEY
   });
 
-  if (!response.ok) {
-    throw new Error(`ElevenLabs error ${response.status}`);
-  }
+  const audioStream = await client.music.compose({
+    forceInstrumental: options?.forceInstrumental ?? false,
+    compositionPlan: payload
+  });
 
-  const blob = await response.blob();
+  const blob = await new Response(audioStream).blob();
   return URL.createObjectURL(blob);
+}
+
+export function revokeAudioUrl(audioUrl: string): void {
+  URL.revokeObjectURL(audioUrl);
 }

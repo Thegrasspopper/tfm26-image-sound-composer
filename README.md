@@ -24,12 +24,14 @@ A TypeScript + React app where users:
 
 ## Environment variables
 
-- `VITE_GEMINI_API_KEY`
-- `VITE_GEMINI_MODEL` (default: `gemini-1.5-flash`)
-- `VITE_ELEVENLABS_API_KEY`
-- `VITE_ELEVENLABS_MODEL` (default: `eleven_multilingual_v2`)
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL` (default: `gemini-2.5-flash`)
+- `CLAUDE_API_KEY`
+- `CLAUDE_MODEL` (default: `claude-haiku-4-5`)
+- `ELEVENLABS_API_KEY`
+- `ELEVENLABS_MUSIC_MODEL` (default: `music_v1`)
 
 ## Notes
 
-- Gemini analysis uses the uploaded image data and requests JSON with an `emotion` field.
-- ElevenLabs endpoint currently uses a fixed voice id (`JBFqnCBsd6RMkjVDRZzb`) to return an audio preview URL.
+- You can analyze images with Gemini or Claude Haiku 4.5 (select in UI), both returning VAD + style JSON.
+- ElevenLabs uses the official JS SDK music compose API with a section-based composition plan.

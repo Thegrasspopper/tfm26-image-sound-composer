@@ -13,6 +13,14 @@
             "command": "npm run build",
             "cwd": "${workspaceFolder}"
         },
+         {
+            "type": "node-terminal",
+            "name": "Start web",
+            "request": "launch",
+            "command": "npm run dev",
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}",
+        },
         {
             "type": "node-terminal",
             "name": "Run Script: dev with debug",
