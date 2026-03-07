@@ -279,13 +279,13 @@ export default function App() {
           prev.map((current) =>
             current.id === item.id
               ? {
-                  ...current,
-                  emotion: mood,
-                  positiveLocalStyles: diversified.positiveLocalStyles,
-                  negativeLocalStyles: diversified.negativeLocalStyles,
-                  prompt: diversified.prompt,
-                  analyzing: false
-                }
+                ...current,
+                emotion: mood,
+                positiveLocalStyles: diversified.positiveLocalStyles,
+                negativeLocalStyles: diversified.negativeLocalStyles,
+                prompt: diversified.prompt,
+                analyzing: false
+              }
               : current
           )
         );
@@ -294,10 +294,10 @@ export default function App() {
           prev.map((current) =>
             current.id === item.id
               ? {
-                  ...current,
-                  emotion: "Analysis failed",
-                  analyzing: false
-                }
+                ...current,
+                emotion: "Analysis failed",
+                analyzing: false
+              }
               : current
           )
         );
@@ -315,10 +315,10 @@ export default function App() {
       prev.map((item) =>
         item.id === selectedId
           ? {
-              ...item,
-              emotion: value,
-              prompt: value
-            }
+            ...item,
+            emotion: value,
+            prompt: value
+          }
           : item
       )
     );
@@ -337,9 +337,9 @@ export default function App() {
       const next = prev.map((item) =>
         item.id === selectedId
           ? {
-              ...item,
-              durationSec
-            }
+            ...item,
+            durationSec
+          }
           : item
       );
 
@@ -436,13 +436,13 @@ export default function App() {
           prev.map((current) =>
             current.id === item.id
               ? {
-                  ...current,
-                  emotion: mood,
-                  positiveLocalStyles: diversified.positiveLocalStyles,
-                  negativeLocalStyles: diversified.negativeLocalStyles,
-                  prompt: diversified.prompt,
-                  analyzing: false
-                }
+                ...current,
+                emotion: mood,
+                positiveLocalStyles: diversified.positiveLocalStyles,
+                negativeLocalStyles: diversified.negativeLocalStyles,
+                prompt: diversified.prompt,
+                analyzing: false
+              }
               : current
           )
         );
@@ -451,9 +451,9 @@ export default function App() {
           prev.map((current) =>
             current.id === item.id
               ? {
-                  ...current,
-                  analyzing: false
-                }
+                ...current,
+                analyzing: false
+              }
               : current
           )
         );
@@ -552,9 +552,9 @@ export default function App() {
 
       const fallbackDurationSec =
         typeof parsed.totalDurationSec === "number" &&
-        Number.isFinite(parsed.totalDurationSec) &&
-        parsed.totalDurationSec > 0 &&
-        parsed.items.length > 0
+          Number.isFinite(parsed.totalDurationSec) &&
+          parsed.totalDurationSec > 0 &&
+          parsed.items.length > 0
           ? Math.max(1, Math.round(parsed.totalDurationSec / parsed.items.length))
           : DEFAULT_IMAGE_DURATION_SEC;
 
@@ -751,96 +751,8 @@ export default function App() {
                       <span className="plus">+</span>
                     </article>
                   </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="col-12">
-              <div className="card shadow-sm border-primary-subtle">
-                <div className="card-body">
-                <div className="row">
-                  <div className="d-flex flex-wrap gap-2">
-                    <button className="btn btn-primary" onClick={onSendPrompt}>
-                      Generate
-                    </button>
-                    <button className="btn btn-outline-secondary" onClick={onExportComposition}>
-                      Export
-                    </button>
-                    <button className="btn btn-outline-secondary" onClick={openImportPicker}>
-                      Import
-                    </button>
-                  </div>
-                  <div className="small text-body-secondary mt-2">{balanceLabel}</div>
-                  <div className="row">
-                                         {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                    </div>
-                  <div className="row"> 
-                                        {audioUrl && (
-                        <div className="d-grid gap-2">
-                          <audio controls src={audioUrl} className="w-100" />
-                          <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
-                            Download Audio
-                          </button>
-                        </div>
-                      )}
-                      </div>
-                      <div className="row">
-                       <div className="col-3 col-lg-8">
-                        <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
-                        {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
-                        </button>
-                        </div>
-                      <div className="col-9 col-lg-8">
-                        
-                        </div>
-   
-                      </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="col-12">
-              <div className="card shadow-sm border-primary-subtle">
-                <div className="card-body">
-                  <h1 className="h4 mb-3">Image Sound Composer</h1>
-                  <div className="row g-3 align-items-start">
-                    <div className="col-12 col-lg-8">
-                      <label htmlFor="ai-provider" className="form-label fw-semibold">
-                        AI provider
-                      </label>
-                      <select
-                        id="ai-provider"
-                        className="form-select mb-3"
-                        value={aiProvider}
-                        onChange={(event) => setAiProvider(event.target.value as AIProvider)}
-                      >
-                        <option value="gemini">Gemini</option>
-                        <option value="claude">Claude Haiku 4.5</option>
-                      </select>
-
-                      <label htmlFor="general-prompt" className="form-label fw-semibold">
-                        General prompt
-                      </label>
-                      <textarea
-                        id="general-prompt"
-                        className="form-control prompt-editor mb-3"
-                        value={generalPrompt}
-                        onChange={(event) => setGeneralPrompt(event.target.value)}
-                        placeholder="Global styles or direction for the whole composition"
-                      />
-
-                      <label htmlFor="total-duration" className="form-label fw-semibold">
-                        Total length (seconds)
-                      </label>
-                      <input
-                        id="total-duration"
-                        type="number"
-                        className="form-control mb-3"
-                        value={totalDurationSec}
-                        readOnly
-                      />
-
+                  <div className="row g-3 mt-2">
+                    <div className="col-6">
                       <label htmlFor="prompt-editor" className="form-label fw-semibold">
                         Selected image emotion
                       </label>
@@ -851,8 +763,9 @@ export default function App() {
                         onChange={(event) => onPromptChange(event.target.value)}
                         placeholder="Click an image to edit its emotion"
                       />
-
-                      <label htmlFor="image-duration" className="form-label fw-semibold mt-3">
+                    </div>
+                    <div className="col-2">
+                      <label htmlFor="image-duration" className="form-label fw-semibold">
                         Selected image duration (seconds)
                       </label>
                       <input
@@ -866,16 +779,74 @@ export default function App() {
                         placeholder="Leave empty for auto duration"
                       />
                     </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-                    <div className="col-12 col-lg-4">
-                      <div className="d-grid gap-2 mb-3">
+            <section className="col-12">
+              <div className="card shadow-sm border-primary-subtle">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="d-flex flex-wrap gap-2">
+                      <button className="btn btn-primary" onClick={onSendPrompt}>
+                        Generate
+                      </button>
+                      <button className="btn btn-outline-secondary" onClick={onExportComposition}>
+                        Export
+                      </button>
+                      <button className="btn btn-outline-secondary" onClick={openImportPicker}>
+                        Import
+                      </button>
+                      <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
+                        {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
+                      </button>
                         <button className="btn btn-outline-primary" onClick={onRegeneratePrompts}>
                           Regenerate Prompts
                         </button>
                         <button className="btn btn-outline-primary" onClick={openFilePicker}>
                           Add Images
                         </button>
+                          <input
+                          id="force-instrumental"
+                          type="checkbox"
+                          className="form-check-input"
+                          checked={forceInstrumental}
+                          onChange={(event) => setForceInstrumental(event.target.checked)}
+                        />
+                        <label className="form-check-label" htmlFor="force-instrumental">
+                          Force instrumental
+                        </label>
+                    </div>
+                    <div className="row">
+                      {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                    </div>
+                    <div className="row">
+                      {audioUrl && (
+                        <div className="d-grid gap-2">
+                          <audio controls src={audioUrl} className="w-100" />
+                          <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
+                            Download Audio
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="row">
+                      <div className="col-3 col-lg-8">
+                        <label>{balanceLabel}</label>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="col-12">
+              <div className="card shadow-sm border-primary-subtle">
+                <div className="card-body">
+                  <h1 className="h4 mb-3">Image Sound Composer</h1>
+                  <div className="row">
+                    <div className="col-6">
                       <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
                       <div className="genre-list mb-2">
                         {GENRE_OPTIONS.map((genre) => (
@@ -921,11 +892,14 @@ export default function App() {
                               onClick={() => removeCustomPositivePrompt(prompt)}
                               title="Remove custom positive prompt"
                             >
-                              {prompt} 
+                              {prompt}
                             </button>
                           ))}
                         </div>
                       )}
+
+                    </div>
+                    <div className="col-6">
                       <label className="form-label fw-semibold mb-2">Negative Prompts</label>
                       <div className="genre-list mb-2">
                         {NEGATIVE_PROMPT_OPTIONS.map((prompt) => (
@@ -976,34 +950,50 @@ export default function App() {
                           ))}
                         </div>
                       )}
-                      <div className="form-check mb-2">
-                        <input
-                          id="force-instrumental"
-                          type="checkbox"
-                          className="form-check-input"
-                          checked={forceInstrumental}
-                          onChange={(event) => setForceInstrumental(event.target.checked)}
-                        />
-                        <label className="form-check-label" htmlFor="force-instrumental">
-                          Force instrumental
-                        </label>
-                      </div>
-
                     </div>
                   </div>
 
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(event) => {
-                      onFilesPicked(event.target.files);
-                      event.currentTarget.value = "";
-                    }}
-                    aria-label="Add images"
-                    className="d-none"
-                  />
+
+
+                  <div className="row g-3 align-items-start">
+                    <div className="col-12 col-lg-8">
+                      <label htmlFor="ai-provider" className="form-label fw-semibold">
+                        AI provider
+                      </label>
+                      <select
+                        id="ai-provider"
+                        className="form-select mb-3"
+                        value={aiProvider}
+                        onChange={(event) => setAiProvider(event.target.value as AIProvider)}
+                      >
+                        <option value="gemini">Gemini</option>
+                        <option value="claude">Claude Haiku 4.5</option>
+                      </select>
+
+                      <label htmlFor="general-prompt" className="form-label fw-semibold">
+                        General prompt
+                      </label>
+                      <textarea
+                        id="general-prompt"
+                        className="form-control prompt-editor mb-3"
+                        value={generalPrompt}
+                        onChange={(event) => setGeneralPrompt(event.target.value)}
+                        placeholder="Global styles or direction for the whole composition"
+                      />
+
+                      <label htmlFor="total-duration" className="form-label fw-semibold">
+                        Total length (seconds)
+                      </label>
+                      <input
+                        id="total-duration"
+                        type="number"
+                        className="form-control mb-3"
+                        value={totalDurationSec}
+                        readOnly
+                      />
+
+                    </div>
+                  </div>
                   <input
                     ref={importInputRef}
                     type="file"
