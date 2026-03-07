@@ -17,6 +17,13 @@ type ImageItem = {
   analyzing: boolean;
 };
 
+type AnalysisContext = {
+  sectionName: string;
+  sectionIndex: number;
+  totalSections: number;
+  selectedGenres: string[];
+};
+
 type ExportFile = {
   version: 1;
   exportedAt: string;
@@ -85,7 +92,7 @@ export default function App() {
   const [customNegativePrompts, setCustomNegativePrompts] = useState<string[]>([]);
   const [newPositivePrompt, setNewPositivePrompt] = useState<string>("");
   const [newNegativePrompt, setNewNegativePrompt] = useState<string>("");
-  const [totalDurationSec, setTotalDurationSec] = useState<number>(60);
+  const [totalDurationSec, setTotalDurationSec] = useState<number>(120);
   const [generalPrompt, setGeneralPrompt] = useState<string>("");
   const [forceInstrumental, setForceInstrumental] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
@@ -132,12 +139,68 @@ export default function App() {
   async function analyzeImageWithProvider(
     base64Data: string,
     mimeType: string,
-    context: { sectionName: string; sectionIndex: number; totalSections: number; selectedGenres: string[] }
+    context: AnalysisContext
   ): Promise<EmotionResult> {
     if (aiProvider === "claude") {
       return analyzeImageEmotionWithClaude(base64Data, mimeType, context);
     }
     return analyzeImageEmotion(base64Data, mimeType, context);
+  }
+
+  function countMatches(source: string[], target: string[]): number {
+    const targetSet = new Set(target.map((value) => value.toLowerCase()));
+    return source.filter((value) => targetSet.has(value.toLowerCase())).length;
+  }
+
+  function buildDifferentiators(result: EmotionResult, previous: ImageItem): string[] {
+    const suggestions = [
+      `${result.palette} tonal palette`,
+      `${result.texture} texture focus`,
+      result.arousal >= 0.65 ? "high-energy accents" : "spacious low-energy phrasing",
+      result.motion >= 0.6 ? "forward rhythmic motion" : "gentle static pacing",
+      result.valence >= 0 ? "brighter harmonic color" : "darker harmonic color",
+      result.dominance >= 0.6 ? "assertive lead presence" : "softer supporting layers"
+    ];
+
+    const previousSet = new Set(
+      [...previous.positiveLocalStyles, ...previous.negativeLocalStyles].map((value) => value.toLowerCase())
+    );
+
+    return suggestions.filter((candidate) => !previousSet.has(candidate.toLowerCase()));
+  }
+
+  function applySimilarityDiversification(
+    result: EmotionResult,
+    previous: ImageItem | undefined
+  ): { prompt: string; positiveLocalStyles: string[]; negativeLocalStyles: string[] } {
+    const mood = result.sceneMood?.trim() || "Unknown";
+    const positiveLocalStyles = [...(result.positiveLocalStyles ?? [])];
+    const negativeLocalStyles = [...(result.negativeLocalStyles ?? [])];
+
+    if (!previous) {
+      return { prompt: mood, positiveLocalStyles, negativeLocalStyles };
+    }
+
+    const positiveMatches = countMatches(positiveLocalStyles, previous.positiveLocalStyles);
+    const negativeMatches = countMatches(negativeLocalStyles, previous.negativeLocalStyles);
+    const totalMatches = positiveMatches + negativeMatches;
+
+    if (totalMatches > 2) {
+      const addCount = totalMatches >= 5 ? 2 : 1;
+      const extra = buildDifferentiators(result, previous).slice(0, addCount);
+      for (const style of extra) {
+        if (!positiveLocalStyles.some((value) => value.toLowerCase() === style.toLowerCase())) {
+          positiveLocalStyles.push(style);
+        }
+      }
+      return {
+        prompt: extra.length ? `${mood}, ${extra.join(", ")}` : mood,
+        positiveLocalStyles,
+        negativeLocalStyles
+      };
+    }
+
+    return { prompt: mood, positiveLocalStyles, negativeLocalStyles };
   }
 
   async function onFilesPicked(fileList: FileList | null) {
@@ -169,6 +232,8 @@ export default function App() {
 
     const totalAfterUpload = items.length + newItems.length;
 
+    const workingItems = [...items, ...newItems];
+
     for (const [offset, item] of newItems.entries()) {
       try {
         const { base64Data, mimeType } = splitDataUrl(item.src);
@@ -181,16 +246,28 @@ export default function App() {
           totalSections: totalAfterUpload,
           selectedGenres
         });
+        const previousItem = workingItems[items.length + offset - 1];
+        const diversified = applySimilarityDiversification(result, previousItem);
         const mood = result.sceneMood?.trim() || "Unknown";
+
+        workingItems[items.length + offset] = {
+          ...workingItems[items.length + offset],
+          emotion: mood,
+          positiveLocalStyles: diversified.positiveLocalStyles,
+          negativeLocalStyles: diversified.negativeLocalStyles,
+          prompt: diversified.prompt,
+          analyzing: false
+        };
+
         setItems((prev) =>
           prev.map((current) =>
             current.id === item.id
               ? {
                   ...current,
                   emotion: mood,
-                  positiveLocalStyles: result.positiveLocalStyles ?? [],
-                  negativeLocalStyles: result.negativeLocalStyles ?? [],
-                  prompt: mood,
+                  positiveLocalStyles: diversified.positiveLocalStyles,
+                  negativeLocalStyles: diversified.negativeLocalStyles,
+                  prompt: diversified.prompt,
                   analyzing: false
                 }
               : current
@@ -303,10 +380,18 @@ export default function App() {
           totalSections,
           selectedGenres
         });
+        const previousItem = currentItems[index - 1];
+        const diversified = applySimilarityDiversification(result, previousItem);
         const mood = result.sceneMood?.trim() || "Unknown";
-        const positiveLocalStyles = result.positiveLocalStyles ?? [];
-        const negativeLocalStyles = result.negativeLocalStyles ?? [];
-        const regeneratedPrompt = mood;
+
+        currentItems[index] = {
+          ...currentItems[index],
+          emotion: mood,
+          positiveLocalStyles: diversified.positiveLocalStyles,
+          negativeLocalStyles: diversified.negativeLocalStyles,
+          prompt: diversified.prompt,
+          analyzing: false
+        };
 
         setItems((prev) =>
           prev.map((current) =>
@@ -314,9 +399,9 @@ export default function App() {
               ? {
                   ...current,
                   emotion: mood,
-                  positiveLocalStyles,
-                  negativeLocalStyles,
-                  prompt: regeneratedPrompt,
+                  positiveLocalStyles: diversified.positiveLocalStyles,
+                  negativeLocalStyles: diversified.negativeLocalStyles,
+                  prompt: diversified.prompt,
                   analyzing: false
                 }
               : current
@@ -470,7 +555,7 @@ export default function App() {
       setTotalDurationSec(
         typeof parsed.totalDurationSec === "number" && Number.isFinite(parsed.totalDurationSec)
           ? Math.max(10, Math.round(parsed.totalDurationSec))
-          : 60
+          : 120
       );
       setForceInstrumental(Boolean(parsed.forceInstrumental));
       setStatus(`Composition imported (${importedItems.length} images).`);
@@ -608,6 +693,24 @@ export default function App() {
             <section className="col-12">
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
+                  <div className="d-flex flex-wrap gap-2">
+                    <button className="btn btn-primary" onClick={onSendPrompt}>
+                      Generate
+                    </button>
+                    <button className="btn btn-outline-secondary" onClick={onExportComposition}>
+                      Export
+                    </button>
+                    <button className="btn btn-outline-secondary" onClick={openImportPicker}>
+                      Import
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="col-12">
+              <div className="card shadow-sm border-primary-subtle">
+                <div className="card-body">
                   <h1 className="h4 mb-3">Image Sound Composer</h1>
                   <div className="row g-3 align-items-start">
                     <div className="col-12 col-lg-8">
@@ -667,20 +770,11 @@ export default function App() {
 
                     <div className="col-12 col-lg-4">
                       <div className="d-grid gap-2 mb-3">
-                        <button className="btn btn-primary" onClick={onSendPrompt}>
-                          Send Prompt To ElevenLabs
-                        </button>
                         <button className="btn btn-outline-primary" onClick={onRegeneratePrompts}>
                           Regenerate Prompts
                         </button>
                         <button className="btn btn-outline-primary" onClick={openFilePicker}>
                           Add Images
-                        </button>
-                        <button className="btn btn-outline-secondary" onClick={onExportComposition}>
-                          Export Composition
-                        </button>
-                        <button className="btn btn-outline-secondary" onClick={openImportPicker}>
-                          Import Composition
                         </button>
                       </div>
                       <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
