@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { analyzeImageEmotionWithClaude } from "./claude";
-import { revokeAudioUrl, sendPromptToElevenLabs } from "./elevenlabs";
+import { getElevenLabsCharacterBalance, revokeAudioUrl, sendPromptToElevenLabs } from "./elevenlabs";
 import { analyzeImageEmotion, type EmotionResult } from "./gemini";
 import { buildMusicPromptFromImages, fileToDataUrl, splitDataUrl } from "./utils";
 
@@ -12,6 +12,7 @@ type ImageItem = {
   name: string;
   emotion: string;
   prompt: string;
+  durationSec?: number;
   positiveLocalStyles: string[];
   negativeLocalStyles: string[];
   analyzing: boolean;
@@ -41,6 +42,7 @@ type ExportFile = {
     name: string;
     emotion: string;
     prompt: string;
+    durationSec?: number;
     positiveLocalStyles: string[];
     negativeLocalStyles: string[];
   }>;
@@ -73,6 +75,7 @@ const NEGATIVE_PROMPT_OPTIONS = [
   "jingle",
   "singer-songwriter"
 ];
+const DEFAULT_IMAGE_DURATION_SEC = 10;
 
 export default function App() {
   const [items, setItems] = useState<ImageItem[]>([]);
@@ -97,6 +100,8 @@ export default function App() {
   const [forceInstrumental, setForceInstrumental] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
   const [audioUrl, setAudioUrl] = useState<string>("");
+  const [balanceLabel, setBalanceLabel] = useState<string>("Balance: --");
+  const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -108,6 +113,15 @@ export default function App() {
     };
   }, [audioUrl]);
 
+  useEffect(() => {
+    void refreshElevenLabsBalance();
+  }, []);
+
+  useEffect(() => {
+    const totalFromTracks = items.reduce((sum, item) => sum + (item.durationSec ?? 0), 0);
+    setTotalDurationSec((prev) => (prev === totalFromTracks ? prev : totalFromTracks));
+  }, [items]);
+
   const selectedItem = items.find((item) => item.id === selectedId) ?? null;
 
   const musicPrompt = useMemo(() => {
@@ -116,6 +130,7 @@ export default function App() {
         name: item.name,
         emotion: item.emotion,
         prompt: item.prompt,
+        durationSec: item.durationSec,
         positiveLocalStyles: item.positiveLocalStyles,
         negativeLocalStyles: item.negativeLocalStyles
       })),
@@ -219,6 +234,7 @@ export default function App() {
         name: file.name,
         emotion: "Analyzing...",
         prompt: DEFAULT_PROMPT,
+        durationSec: DEFAULT_IMAGE_DURATION_SEC,
         positiveLocalStyles: [],
         negativeLocalStyles: [],
         analyzing: true
@@ -306,6 +322,29 @@ export default function App() {
           : item
       )
     );
+  }
+
+  function onDurationChange(value: string) {
+    if (!selectedId) {
+      return;
+    }
+
+    const trimmed = value.trim();
+    const parsed = Number(trimmed);
+    const durationSec = trimmed === "" || !Number.isFinite(parsed) || parsed <= 0 ? undefined : Math.round(parsed);
+
+    setItems((prev) => {
+      const next = prev.map((item) =>
+        item.id === selectedId
+          ? {
+              ...item,
+              durationSec
+            }
+          : item
+      );
+
+      return next;
+    });
   }
 
   function moveItem(sourceId: string, targetId: string) {
@@ -481,6 +520,7 @@ export default function App() {
         name: item.name,
         emotion: item.emotion,
         prompt: item.prompt,
+        durationSec: item.durationSec,
         positiveLocalStyles: item.positiveLocalStyles,
         negativeLocalStyles: item.negativeLocalStyles
       }))
@@ -510,6 +550,14 @@ export default function App() {
         throw new Error("Invalid composition file format");
       }
 
+      const fallbackDurationSec =
+        typeof parsed.totalDurationSec === "number" &&
+        Number.isFinite(parsed.totalDurationSec) &&
+        parsed.totalDurationSec > 0 &&
+        parsed.items.length > 0
+          ? Math.max(1, Math.round(parsed.totalDurationSec / parsed.items.length))
+          : DEFAULT_IMAGE_DURATION_SEC;
+
       const importedItems: ImageItem[] = parsed.items
         .filter((item): item is NonNullable<ExportFile["items"][number]> => Boolean(item))
         .map((item) => ({
@@ -518,6 +566,10 @@ export default function App() {
           name: typeof item.name === "string" ? item.name : "Imported image",
           emotion: typeof item.emotion === "string" ? item.emotion : "Unknown",
           prompt: typeof item.prompt === "string" ? item.prompt : DEFAULT_PROMPT,
+          durationSec:
+            typeof item.durationSec === "number" && Number.isFinite(item.durationSec) && item.durationSec > 0
+              ? Math.round(item.durationSec)
+              : fallbackDurationSec,
           positiveLocalStyles: Array.isArray(item.positiveLocalStyles)
             ? item.positiveLocalStyles.filter((value): value is string => typeof value === "string")
             : [],
@@ -580,6 +632,18 @@ export default function App() {
       setStatus("Audio generated successfully.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Failed to send prompt to ElevenLabs");
+    }
+  }
+
+  async function refreshElevenLabsBalance() {
+    try {
+      setLoadingBalance(true);
+      const balance = await getElevenLabsCharacterBalance();
+      setBalanceLabel(`Balance: ${balance.remaining.toLocaleString()} / ${balance.limit.toLocaleString()}`);
+    } catch (error) {
+      setBalanceLabel(error instanceof Error ? `Balance: ${error.message}` : "Balance: unavailable");
+    } finally {
+      setLoadingBalance(false);
     }
   }
 
@@ -666,6 +730,7 @@ export default function App() {
                           </button>
                           <img src={item.src} alt={item.name} />
                           <p className="emotion-tag">{item.analyzing ? "Analyzing..." : item.emotion}</p>
+                          {item.durationSec && <p className="duration-tag">{item.durationSec}s</p>}
                         </div>
                       </article>
                     ))}
@@ -693,6 +758,7 @@ export default function App() {
             <section className="col-12">
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
+                <div className="row">
                   <div className="d-flex flex-wrap gap-2">
                     <button className="btn btn-primary" onClick={onSendPrompt}>
                       Generate
@@ -703,6 +769,32 @@ export default function App() {
                     <button className="btn btn-outline-secondary" onClick={openImportPicker}>
                       Import
                     </button>
+                  </div>
+                  <div className="small text-body-secondary mt-2">{balanceLabel}</div>
+                  <div className="row">
+                                         {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                    </div>
+                  <div className="row"> 
+                                        {audioUrl && (
+                        <div className="d-grid gap-2">
+                          <audio controls src={audioUrl} className="w-100" />
+                          <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
+                            Download Audio
+                          </button>
+                        </div>
+                      )}
+                      </div>
+                      <div className="row">
+                       <div className="col-3 col-lg-8">
+                        <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
+                        {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
+                        </button>
+                        </div>
+                      <div className="col-9 col-lg-8">
+                        
+                        </div>
+   
+                      </div>
                   </div>
                 </div>
               </div>
@@ -744,16 +836,9 @@ export default function App() {
                       <input
                         id="total-duration"
                         type="number"
-                        min={10}
-                        step={1}
                         className="form-control mb-3"
                         value={totalDurationSec}
-                        onChange={(event) => {
-                          const value = Number(event.target.value);
-                          if (Number.isFinite(value)) {
-                            setTotalDurationSec(Math.max(10, Math.round(value)));
-                          }
-                        }}
+                        readOnly
                       />
 
                       <label htmlFor="prompt-editor" className="form-label fw-semibold">
@@ -765,6 +850,20 @@ export default function App() {
                         value={selectedItem?.emotion ?? ""}
                         onChange={(event) => onPromptChange(event.target.value)}
                         placeholder="Click an image to edit its emotion"
+                      />
+
+                      <label htmlFor="image-duration" className="form-label fw-semibold mt-3">
+                        Selected image duration (seconds)
+                      </label>
+                      <input
+                        id="image-duration"
+                        type="number"
+                        min={1}
+                        step={1}
+                        className="form-control"
+                        value={selectedItem?.durationSec ?? ""}
+                        onChange={(event) => onDurationChange(event.target.value)}
+                        placeholder="Leave empty for auto duration"
                       />
                     </div>
 
@@ -822,7 +921,7 @@ export default function App() {
                               onClick={() => removeCustomPositivePrompt(prompt)}
                               title="Remove custom positive prompt"
                             >
-                              {prompt} x
+                              {prompt} 
                             </button>
                           ))}
                         </div>
@@ -889,15 +988,7 @@ export default function App() {
                           Force instrumental
                         </label>
                       </div>
-                      {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                      {audioUrl && (
-                        <div className="d-grid gap-2">
-                          <audio controls src={audioUrl} className="w-100" />
-                          <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
-                            Download Audio
-                          </button>
-                        </div>
-                      )}
+
                     </div>
                   </div>
 

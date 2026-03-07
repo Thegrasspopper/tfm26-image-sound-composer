@@ -34,6 +34,7 @@ type PromptImage = {
   name: string;
   emotion: string;
   prompt: string;
+  durationSec?: number;
   positiveLocalStyles?: string[];
   negativeLocalStyles?: string[];
 };
@@ -128,11 +129,16 @@ export function buildMusicPromptFromImages(images: PromptImage[], options?: Buil
         ? "Final burst"
         : `Section ${index + 1} - ${normalizeLabel(item.name) || `Image ${index + 1}`}`;
 
+    const manualDurationMs =
+      typeof item.durationSec === "number" && Number.isFinite(item.durationSec) && item.durationSec > 0
+        ? Math.round(item.durationSec * 1000)
+        : undefined;
+
     return {
       sectionName,
       positiveLocalStyles: positiveLocalStyles.length ? positiveLocalStyles : ["cinematic", "dynamic"],
       negativeLocalStyles,
-      durationMs: durations[index] ?? 4000,
+      durationMs: manualDurationMs ?? durations[index] ?? 4000,
       lines: []
     };
   });
