@@ -98,17 +98,39 @@ body {
   max-width: calc(100% - 16px);
 }
 
-.duration-tag {
+.duration-inline {
   position: absolute;
   left: 8px;
   bottom: 8px;
   margin: 0;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 999px;
   background: rgba(12, 18, 34, 0.75);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+}
+
+.duration-readout {
+  cursor: text;
+  user-select: none;
+}
+
+.duration-inline input {
+  width: 54px;
+  height: 22px;
+  border: none;
+  border-radius: 999px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+}
+
+.duration-inline input:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
 }
 
 .image-card img {

@@ -81,6 +81,7 @@ export default function App() {
   const [items, setItems] = useState<ImageItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [durationEditingId, setDurationEditingId] = useState<string | null>(null);
   const [payloadMinimized, setPayloadMinimized] = useState<boolean>(false);
   const [aiProvider, setAiProvider] = useState<AIProvider>("claude");
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["cinematic"]);
@@ -112,10 +113,6 @@ export default function App() {
       }
     };
   }, [audioUrl]);
-
-  useEffect(() => {
-    void refreshElevenLabsBalance();
-  }, []);
 
   useEffect(() => {
     const totalFromTracks = items.reduce((sum, item) => sum + (item.durationSec ?? 0), 0);
@@ -345,6 +342,27 @@ export default function App() {
 
       return next;
     });
+  }
+
+  function onItemDurationChange(itemId: string, value: string) {
+    const trimmed = value.trim();
+    const parsed = Number(trimmed);
+    const durationSec = trimmed === "" || !Number.isFinite(parsed) || parsed <= 0 ? undefined : Math.round(parsed);
+
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              durationSec
+            }
+          : item
+      )
+    );
+  }
+
+  function stopDurationEditing() {
+    setDurationEditingId(null);
   }
 
   function moveItem(sourceId: string, targetId: string) {
@@ -730,7 +748,36 @@ export default function App() {
                           </button>
                           <img src={item.src} alt={item.name} />
                           <p className="emotion-tag">{item.analyzing ? "Analyzing..." : item.emotion}</p>
-                          {item.durationSec && <p className="duration-tag">{item.durationSec}s</p>}
+                          <div
+                            className="duration-inline"
+                            onClick={(event) => event.stopPropagation()}
+                            onMouseDown={(event) => event.stopPropagation()}
+                            onDoubleClick={() => setDurationEditingId(item.id)}
+                            title="Double click to edit duration"
+                          >
+                            {durationEditingId === item.id ? (
+                              <>
+                                <span>s</span>
+                                <input
+                                  autoFocus
+                                  type="number"
+                                  min={1}
+                                  step={1}
+                                  value={item.durationSec ?? ""}
+                                  onChange={(event) => onItemDurationChange(item.id, event.target.value)}
+                                  onBlur={stopDurationEditing}
+                                  onKeyDown={(event) => {
+                                    if (event.key === "Enter" || event.key === "Escape") {
+                                      stopDurationEditing();
+                                    }
+                                  }}
+                                  aria-label={`Duration for ${item.name}`}
+                                />
+                              </>
+                            ) : (
+                              <span className="duration-readout">{item.durationSec ?? 0}s</span>
+                            )}
+                          </div>
                         </div>
                       </article>
                     ))}
