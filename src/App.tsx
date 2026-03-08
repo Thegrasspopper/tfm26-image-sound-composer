@@ -678,10 +678,55 @@ export default function App() {
   return (
     <>
       <main className="container-fluid py-3">
-          
-
-          <div className={payloadMinimized ? "col" : "col-12 col-lg-8 col-xl-9"}>
+          <div className= "col">
             <div className="row g-3">
+              <section className="col-12">
+                    <div className="row">
+                      <div className="d-flex flex-wrap gap-2">
+                        <button className="btn btn-primary" onClick={onSendPrompt}>
+                          Generate
+                        </button>
+                        <button
+                          className="btn btn-outline-secondary btn-icon"
+                          onClick={onExportComposition}
+                          aria-label="Export composition"
+                          title="Export composition"
+                        >
+                          <span className="material-symbols-outlined" aria-hidden="true">download</span>
+                        </button>
+                        <button
+                          className="btn btn-outline-secondary btn-icon"
+                          onClick={openImportPicker}
+                          aria-label="Import composition"
+                          title="Import composition"
+                        >
+                          <span className="material-symbols-outlined" aria-hidden="true">upload</span>
+                        </button>
+                          <button
+                            className="btn btn-outline-primary btn-icon"
+                            onClick={onRegeneratePrompts}
+                            aria-label="Re analyze images"
+                            title="Re analyze images"
+                          >
+                            <span className="material-symbols-outlined" aria-hidden="true">refresh</span>
+                          </button>
+                      </div>
+                      <div className="row">
+                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                      </div>
+                      <div className="row">
+                        {audioUrl && (
+                          <div className="d-grid gap-2">
+                            <audio controls src={audioUrl} className="w-100" />
+                            <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
+                              Download Audio
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+              </section>
+
               <section className="col-12">
                 <div className="card shadow-sm border-primary-subtle">
                   <div className="card-body">
@@ -782,56 +827,6 @@ export default function App() {
                 </div>
               </section>
 
-              <section className="col-12">
-                <div className="card shadow-sm border-primary-subtle">
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="d-flex flex-wrap gap-2">
-                        <button className="btn btn-primary" onClick={onSendPrompt}>
-                          Generate
-                        </button>
-                        <button
-                          className="btn btn-outline-secondary btn-icon"
-                          onClick={onExportComposition}
-                          aria-label="Export composition"
-                          title="Export composition"
-                        >
-                          <span className="material-symbols-outlined" aria-hidden="true">download</span>
-                        </button>
-                        <button
-                          className="btn btn-outline-secondary btn-icon"
-                          onClick={openImportPicker}
-                          aria-label="Import composition"
-                          title="Import composition"
-                        >
-                          <span className="material-symbols-outlined" aria-hidden="true">upload</span>
-                        </button>
-                          <button
-                            className="btn btn-outline-primary btn-icon"
-                            onClick={onRegeneratePrompts}
-                            aria-label="Re analyze images"
-                            title="Re analyze images"
-                          >
-                            <span className="material-symbols-outlined" aria-hidden="true">refresh</span>
-                          </button>
-                      </div>
-                      <div className="row">
-                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                      </div>
-                      <div className="row">
-                        {audioUrl && (
-                          <div className="d-grid gap-2">
-                            <audio controls src={audioUrl} className="w-100" />
-                            <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
-                              Download Audio
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
 
               <section className="col-12">
                 <div className="card shadow-sm border-primary-subtle">
