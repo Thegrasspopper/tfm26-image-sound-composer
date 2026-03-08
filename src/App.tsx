@@ -121,22 +121,6 @@ export default function App() {
   }, [items]);
 
   const selectedItem = items.find((item) => item.id === selectedId) ?? null;
-  const generalPromptTags = useMemo(
-    () =>
-      generalPrompt
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-    [generalPrompt]
-  );
-  const selectedPromptTags = useMemo(
-    () =>
-      (selectedItem?.prompt ?? "")
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-    [selectedItem?.prompt]
-  );
 
   const musicPrompt = useMemo(() => {
     return buildMusicPromptFromImages(
@@ -164,6 +148,17 @@ export default function App() {
     generalPrompt,
     totalDurationSec
   ]);
+
+  const selectedSection = useMemo(() => {
+    if (!selectedId) {
+      return null;
+    }
+    const selectedIndex = items.findIndex((item) => item.id === selectedId);
+    if (selectedIndex < 0) {
+      return null;
+    }
+    return musicPrompt.sections[selectedIndex] ?? null;
+  }, [items, selectedId, musicPrompt.sections]);
 
   async function analyzeImageWithProvider(
     base64Data: string,
@@ -697,37 +692,7 @@ export default function App() {
   return (
     <>
       <main className="container-fluid py-3">
-        <div className="row g-3 align-items-start">
-          <aside className={payloadMinimized ? "col-12 col-lg-auto" : "col-12 col-lg-4 col-xl-3"}>
-            <div className={`card shadow-sm border-primary-subtle payload-window ${payloadMinimized ? "minimized" : ""}`}>
-              {!payloadMinimized ? (
-                <div className="card-body">
-                  <div className="d-flex align-items-center justify-content-between mb-2">
-                    <h2 className="h6 text-uppercase text-primary mb-0">Composed payload preview</h2>
-                    <button
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => setPayloadMinimized(true)}
-                      aria-label="Minimize payload preview"
-                    >
-                      Minimize
-                    </button>
-                  </div>
-                  <pre className="small bg-light border rounded p-2 payload-preview mb-0">
-                    {JSON.stringify(musicPrompt, null, 2)}
-                  </pre>
-                </div>
-              ) : (
-                <button
-                  className="payload-restore btn btn-outline-primary"
-                  onClick={() => setPayloadMinimized(false)}
-                  aria-label="Expand payload preview"
-                  title="Expand payload preview"
-                >
-                  Expand Payload
-                </button>
-              )}
-            </div>
-          </aside>
+          
 
           <div className={payloadMinimized ? "col" : "col-12 col-lg-8 col-xl-9"}>
             <div className="row g-3">
@@ -1016,7 +981,6 @@ export default function App() {
                 </div>
               </section>
             </div>
-          </div>
         </div>
       </main>
 
@@ -1034,15 +998,28 @@ export default function App() {
               </button>
             </div>
             <p className="small fw-semibold mb-2">General Prompt</p>
-            <div className="floating-tags">
-              {generalPromptTags.length ? (
-                generalPromptTags.map((tag) => (
-                  <span key={`general-${tag}`} className="badge text-bg-primary">
+            <p className="small mb-1 text-primary-emphasis">Positive</p>
+            <div className="floating-tags mb-2">
+              {musicPrompt.positiveGlobalStyles.length ? (
+                musicPrompt.positiveGlobalStyles.map((tag) => (
+                  <span key={`global-positive-${tag}`} className="badge text-bg-primary">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-muted small">No general prompt tags yet.</span>
+                <span className="text-muted small">No positive global styles yet.</span>
+              )}
+            </div>
+            <p className="small mb-1 text-danger-emphasis">Negative</p>
+            <div className="floating-tags">
+              {musicPrompt.negativeGlobalStyles.length ? (
+                musicPrompt.negativeGlobalStyles.map((tag) => (
+                  <span key={`global-negative-${tag}`} className="badge text-bg-danger">
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="text-muted small">No negative global styles yet.</span>
               )}
             </div>
             <hr className="my-3" />
@@ -1050,15 +1027,28 @@ export default function App() {
             {selectedItem ? (
               <div className="selected-mini-card">
                 <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
-                <div className="floating-tags mt-2">
-                  {selectedPromptTags.length ? (
-                    selectedPromptTags.map((tag) => (
-                      <span key={`${selectedItem.id}-${tag}`} className="badge text-bg-secondary">
+                <p className="small mb-1 mt-2 text-primary-emphasis">Positive</p>
+                <div className="floating-tags mb-2">
+                  {selectedSection?.positiveLocalStyles.length ? (
+                    selectedSection.positiveLocalStyles.map((tag, index) => (
+                      <span key={`${selectedItem.id}-pos-${tag}-${index}`} className="badge text-bg-primary">
                         {tag}
                       </span>
                     ))
                   ) : (
-                    <span className="text-muted small">No prompt tags for this image.</span>
+                    <span className="text-muted small">No positive local styles for this image.</span>
+                  )}
+                </div>
+                <p className="small mb-1 text-danger-emphasis">Negative</p>
+                <div className="floating-tags">
+                  {selectedSection?.negativeLocalStyles.length ? (
+                    selectedSection.negativeLocalStyles.map((tag, index) => (
+                      <span key={`${selectedItem.id}-neg-${tag}-${index}`} className="badge text-bg-danger">
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-muted small">No negative local styles for this image.</span>
                   )}
                 </div>
               </div>
