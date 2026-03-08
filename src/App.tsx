@@ -800,30 +800,12 @@ export default function App() {
                   </div>
                   <div className="row g-3 mt-2">
                     <div className="col-6">
-                      <label htmlFor="prompt-editor" className="form-label fw-semibold">
-                        Selected image emotion
-                      </label>
                       <textarea
                         id="prompt-editor"
                         className="form-control prompt-editor"
                         value={selectedItem?.emotion ?? ""}
                         onChange={(event) => onPromptChange(event.target.value)}
                         placeholder="Click an image to edit its emotion"
-                      />
-                    </div>
-                    <div className="col-2">
-                      <label htmlFor="image-duration" className="form-label fw-semibold">
-                        Selected image duration (seconds)
-                      </label>
-                      <input
-                        id="image-duration"
-                        type="number"
-                        min={1}
-                        step={1}
-                        className="form-control"
-                        value={selectedItem?.durationSec ?? ""}
-                        onChange={(event) => onDurationChange(event.target.value)}
-                        placeholder="Leave empty for auto duration"
                       />
                     </div>
                   </div>
@@ -849,21 +831,8 @@ export default function App() {
                         {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
                       </button>
                         <button className="btn btn-outline-primary" onClick={onRegeneratePrompts}>
-                          Regenerate Prompts
+                          Re analize images
                         </button>
-                        <button className="btn btn-outline-primary" onClick={openFilePicker}>
-                          Add Images
-                        </button>
-                          <input
-                          id="force-instrumental"
-                          type="checkbox"
-                          className="form-check-input"
-                          checked={forceInstrumental}
-                          onChange={(event) => setForceInstrumental(event.target.checked)}
-                        />
-                        <label className="form-check-label" htmlFor="force-instrumental">
-                          Force instrumental
-                        </label>
                     </div>
                     <div className="row">
                       {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
@@ -891,7 +860,7 @@ export default function App() {
             <section className="col-12">
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
-                  <h1 className="h4 mb-3">Image Sound Composer</h1>
+                  <h1 className="h4 mb-3">Image Sound Composer {totalDurationSec} seconds</h1>
                   <div className="row">
                     <div className="col-6">
                       <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
@@ -992,7 +961,7 @@ export default function App() {
                               onClick={() => removeCustomNegativePrompt(prompt)}
                               title="Remove custom negative prompt"
                             >
-                              {prompt} x
+                              {prompt} 
                             </button>
                           ))}
                         </div>
@@ -1000,47 +969,6 @@ export default function App() {
                     </div>
                   </div>
 
-
-
-                  <div className="row g-3 align-items-start">
-                    <div className="col-12 col-lg-8">
-                      <label htmlFor="ai-provider" className="form-label fw-semibold">
-                        AI provider
-                      </label>
-                      <select
-                        id="ai-provider"
-                        className="form-select mb-3"
-                        value={aiProvider}
-                        onChange={(event) => setAiProvider(event.target.value as AIProvider)}
-                      >
-                        <option value="gemini">Gemini</option>
-                        <option value="claude">Claude Haiku 4.5</option>
-                      </select>
-
-                      <label htmlFor="general-prompt" className="form-label fw-semibold">
-                        General prompt
-                      </label>
-                      <textarea
-                        id="general-prompt"
-                        className="form-control prompt-editor mb-3"
-                        value={generalPrompt}
-                        onChange={(event) => setGeneralPrompt(event.target.value)}
-                        placeholder="Global styles or direction for the whole composition"
-                      />
-
-                      <label htmlFor="total-duration" className="form-label fw-semibold">
-                        Total length (seconds)
-                      </label>
-                      <input
-                        id="total-duration"
-                        type="number"
-                        className="form-control mb-3"
-                        value={totalDurationSec}
-                        readOnly
-                      />
-
-                    </div>
-                  </div>
                   <input
                     ref={importInputRef}
                     type="file"
