@@ -1,20 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0");
 
-:root {
-  --bs-primary: #212121;
-  --bs-primary-rgb: 33, 33, 33;
-  --bs-primary-text-emphasis: #212121;
-  --bs-primary-bg-subtle: #f5f5f5;
-  --bs-primary-border-subtle: #d6d6d6;
-  --bs-link-color: #212121;
-  --bs-link-hover-color: #000000;
-}
-
 body {
   margin: 0;
   min-height: 100vh;
-  background: #f5f5f5;
-  color: #212121;
+  background: #f7fbff;
 }
 
 .material-symbols-outlined {
@@ -45,6 +34,42 @@ body {
   justify-content: center;
   padding: 0;
 }
+.btn-primary {
+  --bs-btn-bg: #212121;
+  --bs-btn-border-color: #212121;
+  --bs-btn-hover-bg: #000000;
+  --bs-btn-hover-border-color: #000000;
+  --bs-btn-active-bg: #000000;
+  --bs-btn-active-border-color: #000000;
+  --bs-btn-disabled-bg: #616161;
+  --bs-btn-disabled-border-color: #616161;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #212121;
+  --bs-btn-border-color: #212121;
+  --bs-btn-hover-bg: #212121;
+  --bs-btn-hover-border-color: #212121;
+  --bs-btn-active-bg: #000000;
+  --bs-btn-active-border-color: #000000;
+}
+
+.text-primary {
+  color: #212121 !important;
+}
+
+.text-primary-emphasis {
+  color: #212121 !important;
+}
+
+.border-primary-subtle {
+  border-color: #d6d6d6 !important;
+}
+
+.text-bg-primary {
+  color: #ffffff !important;
+  background-color: #212121 !important;
+}
 
 
 .floating-prompt-panel {
@@ -63,8 +88,7 @@ body {
 }
 
 .prompt-panel-restore {
-  min-height: 180px;
-  writing-mode: vertical-rl;
+  min-height: 32px;
   transform: rotate(180deg);
   border: none;
   border-radius: 0.375rem;
@@ -80,7 +104,7 @@ body {
   border: 1px solid #212121;
   border-radius: 10px;
   padding: 8px;
-  background: #ffffff;
+  background: #f7fbff;
 }
 
 .selected-mini-image {
@@ -170,8 +194,8 @@ body {
   font-size: 0.85rem;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid #616161;
+  background: rgba(236, 244, 255, 0.88);
+  border: 1px solid #212121;
   backdrop-filter: blur(1px);
   text-align: center;
   max-width: calc(100% - 16px);
@@ -184,7 +208,7 @@ body {
   margin: 0;
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(33, 33, 33, 0.82);
+  background: rgba(12, 18, 34, 0.75);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
@@ -219,11 +243,15 @@ body {
   border-radius: 8px;
 }
 
+.card{
+  --bs-card-border-color: none;
+}
+
 .add-card {
   aspect-ratio: 1 / 1;
   display: grid;
   place-content: center;
-  border: 2px dashed #212121;
+  border: 1px dashed #212121;
   background: rgba(255, 255, 255, 0.65);
   color: #212121;
   cursor: pointer;

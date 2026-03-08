@@ -82,7 +82,6 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [durationEditingId, setDurationEditingId] = useState<string | null>(null);
-  const [payloadMinimized, setPayloadMinimized] = useState<boolean>(false);
   const [promptPanelMinimized, setPromptPanelMinimized] = useState<boolean>(false);
   const [aiProvider, setAiProvider] = useState<AIProvider>("claude");
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["cinematic"]);
@@ -711,24 +710,11 @@ export default function App() {
                             <span className="material-symbols-outlined" aria-hidden="true">refresh</span>
                           </button>
                       </div>
-                      <div className="row">
-                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                      </div>
-                      <div className="row">
-                        {audioUrl && (
-                          <div className="d-grid gap-2">
-                            <audio controls src={audioUrl} className="w-100" />
-                            <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
-                              Download Audio
-                            </button>
-                          </div>
-                        )}
-                      </div>
                     </div>
               </section>
 
               <section className="col-12">
-                <div className="card shadow-sm border-primary-subtle">
+                <div className="card">
                   <div className="card-body">
                     <h2 className="h6 text-uppercase text-primary mb-3">Image Composer</h2>
                     <div className="sequence">
@@ -826,7 +812,22 @@ export default function App() {
                   </div>
                 </div>
               </section>
-
+                      
+              <section className="col-12">
+                    <div className="row">
+                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                      </div>
+                      <div className="row">
+                        {audioUrl && (
+                          <div className="d-grid gap-2">
+                            <audio controls src={audioUrl} className="w-100" />
+                            <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
+                              Download Audio
+                            </button>
+                          </div>
+                        )}
+                      </div>
+              </section>
 
               <section className="col-12">
                 <div className="card shadow-sm border-primary-subtle">
@@ -967,7 +968,7 @@ export default function App() {
                 onClick={() => setPromptPanelMinimized(true)}
                 aria-label="Minimize prompt tags panel"
               >
-                Minimize
+                -
               </button>
             </div>
             <p className="small fw-semibold mb-2">General Prompt</p>
@@ -1036,7 +1037,7 @@ export default function App() {
             aria-label="Expand prompt tags panel"
             title="Expand prompt tags panel"
           >
-            Prompt Tags
+           +
           </button>
         )}
       </aside>
