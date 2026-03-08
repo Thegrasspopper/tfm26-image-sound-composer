@@ -804,11 +804,21 @@ export default function App() {
                         <button className="btn btn-primary" onClick={onSendPrompt}>
                           Generate
                         </button>
-                        <button className="btn btn-outline-secondary" onClick={onExportComposition}>
-                          Export
+                        <button
+                          className="btn btn-outline-secondary btn-icon"
+                          onClick={onExportComposition}
+                          aria-label="Export composition"
+                          title="Export composition"
+                        >
+                          <span className="material-symbols-outlined" aria-hidden="true">download</span>
                         </button>
-                        <button className="btn btn-outline-secondary" onClick={openImportPicker}>
-                          Import
+                        <button
+                          className="btn btn-outline-secondary btn-icon"
+                          onClick={openImportPicker}
+                          aria-label="Import composition"
+                          title="Import composition"
+                        >
+                          <span className="material-symbols-outlined" aria-hidden="true">upload</span>
                         </button>
                         <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
                           {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
