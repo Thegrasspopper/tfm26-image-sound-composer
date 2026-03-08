@@ -8,6 +8,49 @@ body {
   max-width: 1400px;
 }
 
+.floating-prompt-panel {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  width: min(300px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  z-index: 1030;
+}
+
+.floating-prompt-panel.minimized {
+  width: auto;
+  max-height: none;
+}
+
+.prompt-panel-restore {
+  min-height: 180px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  border: none;
+  border-radius: 0.375rem;
+}
+
+.floating-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.selected-mini-card {
+  border: 1px solid #d4e3f7;
+  border-radius: 10px;
+  padding: 8px;
+  background: #f7fbff;
+}
+
+.selected-mini-image {
+  width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 .payload-window {
   position: sticky;
   top: 12px;
@@ -157,6 +200,19 @@ body {
 }
 
 @media (max-width: 991.98px) {
+  .floating-prompt-panel {
+    position: static;
+    width: 100%;
+    max-height: none;
+  }
+
+  .prompt-panel-restore {
+    min-height: auto;
+    writing-mode: horizontal-tb;
+    transform: none;
+    width: 100%;
+  }
+
   .payload-window {
     position: static;
   }

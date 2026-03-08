@@ -83,6 +83,7 @@ export default function App() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [durationEditingId, setDurationEditingId] = useState<string | null>(null);
   const [payloadMinimized, setPayloadMinimized] = useState<boolean>(false);
+  const [promptPanelMinimized, setPromptPanelMinimized] = useState<boolean>(false);
   const [aiProvider, setAiProvider] = useState<AIProvider>("claude");
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["cinematic"]);
   const [selectedNegativePrompts, setSelectedNegativePrompts] = useState<string[]>([
@@ -120,6 +121,22 @@ export default function App() {
   }, [items]);
 
   const selectedItem = items.find((item) => item.id === selectedId) ?? null;
+  const generalPromptTags = useMemo(
+    () =>
+      generalPrompt
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    [generalPrompt]
+  );
+  const selectedPromptTags = useMemo(
+    () =>
+      (selectedItem?.prompt ?? "")
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    [selectedItem?.prompt]
+  );
 
   const musicPrompt = useMemo(() => {
     return buildMusicPromptFromImages(
@@ -678,315 +695,388 @@ export default function App() {
   }
 
   return (
-    <main className="container-fluid py-3">
-      <div className="row g-3 align-items-start">
-        <aside className={payloadMinimized ? "col-12 col-lg-auto" : "col-12 col-lg-4 col-xl-3"}>
-          <div className={`card shadow-sm border-primary-subtle payload-window ${payloadMinimized ? "minimized" : ""}`}>
-            {!payloadMinimized ? (
-              <div className="card-body">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <h2 className="h6 text-uppercase text-primary mb-0">Composed payload preview</h2>
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => setPayloadMinimized(true)}
-                    aria-label="Minimize payload preview"
-                  >
-                    Minimize
-                  </button>
-                </div>
-                <pre className="small bg-light border rounded p-2 payload-preview mb-0">
-                  {JSON.stringify(musicPrompt, null, 2)}
-                </pre>
-              </div>
-            ) : (
-              <button
-                className="payload-restore btn btn-outline-primary"
-                onClick={() => setPayloadMinimized(false)}
-                aria-label="Expand payload preview"
-                title="Expand payload preview"
-              >
-                Expand Payload
-              </button>
-            )}
-          </div>
-        </aside>
-
-        <div className={payloadMinimized ? "col" : "col-12 col-lg-8 col-xl-9"}>
-          <div className="row g-3">
-            <section className="col-12">
-              <div className="card shadow-sm border-primary-subtle">
+    <>
+      <main className="container-fluid py-3">
+        <div className="row g-3 align-items-start">
+          <aside className={payloadMinimized ? "col-12 col-lg-auto" : "col-12 col-lg-4 col-xl-3"}>
+            <div className={`card shadow-sm border-primary-subtle payload-window ${payloadMinimized ? "minimized" : ""}`}>
+              {!payloadMinimized ? (
                 <div className="card-body">
-                  <h2 className="h6 text-uppercase text-primary mb-3">Image Composer</h2>
-                  <div className="sequence">
-                    {items.map((item) => (
-                      <article
-                        key={item.id}
-                        className={`image-card ${selectedId === item.id ? "selected" : ""}`}
-                        draggable
-                        onClick={() => setSelectedId(item.id)}
-                        onDragStart={() => setDraggingId(item.id)}
-                        onDragOver={(event) => event.preventDefault()}
-                        onDrop={() => {
-                          if (draggingId) {
-                            moveItem(draggingId, item.id);
-                          }
-                        }}
-                        onDragEnd={() => setDraggingId(null)}
-                      >
-                        <div className="image-frame">
-                          <button
-                            type="button"
-                            className="remove-image-btn btn btn-sm btn-danger"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              removeImage(item.id);
-                            }}
-                            aria-label={`Remove ${item.name}`}
-                            title="Remove image"
-                          >
-                            x
-                          </button>
-                          <img src={item.src} alt={item.name} />
-                          <p className="emotion-tag">{item.analyzing ? "Analyzing..." : item.emotion}</p>
-                          <div
-                            className="duration-inline"
-                            onClick={(event) => event.stopPropagation()}
-                            onMouseDown={(event) => event.stopPropagation()}
-                            onDoubleClick={() => setDurationEditingId(item.id)}
-                            title="Double click to edit duration"
-                          >
-                            {durationEditingId === item.id ? (
-                              <>
-                                <span>s</span>
-                                <input
-                                  autoFocus
-                                  type="number"
-                                  min={1}
-                                  step={1}
-                                  value={item.durationSec ?? ""}
-                                  onChange={(event) => onItemDurationChange(item.id, event.target.value)}
-                                  onBlur={stopDurationEditing}
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Enter" || event.key === "Escape") {
-                                      stopDurationEditing();
-                                    }
-                                  }}
-                                  aria-label={`Duration for ${item.name}`}
-                                />
-                              </>
-                            ) : (
-                              <span className="duration-readout">{item.durationSec ?? 0}s</span>
-                            )}
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-
-                    <article
-                      className="image-card add-card"
-                      role="button"
-                      tabIndex={0}
-                      onClick={openFilePicker}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          openFilePicker();
-                        }
-                      }}
-                      aria-label="Add a new image"
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <h2 className="h6 text-uppercase text-primary mb-0">Composed payload preview</h2>
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => setPayloadMinimized(true)}
+                      aria-label="Minimize payload preview"
                     >
-                      <span className="plus">+</span>
-                    </article>
+                      Minimize
+                    </button>
                   </div>
-                  <div className="row g-3 mt-2">
-                    <div className="col-6">
-                      <textarea
-                        id="prompt-editor"
-                        className="form-control prompt-editor"
-                        value={selectedItem?.emotion ?? ""}
-                        onChange={(event) => onPromptChange(event.target.value)}
-                        placeholder="Click an image to edit its emotion"
-                      />
-                    </div>
-                  </div>
+                  <pre className="small bg-light border rounded p-2 payload-preview mb-0">
+                    {JSON.stringify(musicPrompt, null, 2)}
+                  </pre>
                 </div>
-              </div>
-            </section>
+              ) : (
+                <button
+                  className="payload-restore btn btn-outline-primary"
+                  onClick={() => setPayloadMinimized(false)}
+                  aria-label="Expand payload preview"
+                  title="Expand payload preview"
+                >
+                  Expand Payload
+                </button>
+              )}
+            </div>
+          </aside>
 
-            <section className="col-12">
-              <div className="card shadow-sm border-primary-subtle">
-                <div className="card-body">
-                  <div className="row">
-                    <div className="d-flex flex-wrap gap-2">
-                      <button className="btn btn-primary" onClick={onSendPrompt}>
-                        Generate
-                      </button>
-                      <button className="btn btn-outline-secondary" onClick={onExportComposition}>
-                        Export
-                      </button>
-                      <button className="btn btn-outline-secondary" onClick={openImportPicker}>
-                        Import
-                      </button>
-                      <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
-                        {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
-                      </button>
-                        <button className="btn btn-outline-primary" onClick={onRegeneratePrompts}>
-                          Re analize images
-                        </button>
-                    </div>
-                    <div className="row">
-                      {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                    </div>
-                    <div className="row">
-                      {audioUrl && (
-                        <div className="d-grid gap-2">
-                          <audio controls src={audioUrl} className="w-100" />
-                          <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
-                            Download Audio
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className="row">
-                      <div className="col-3 col-lg-8">
-                        <label>{balanceLabel}</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="col-12">
-              <div className="card shadow-sm border-primary-subtle">
-                <div className="card-body">
-                  <h1 className="h4 mb-3">Image Sound Composer {totalDurationSec} seconds</h1>
-                  <div className="row">
-                    <div className="col-6">
-                      <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
-                      <div className="genre-list mb-2">
-                        {GENRE_OPTIONS.map((genre) => (
-                          <button
-                            key={genre}
-                            type="button"
-                            className={`btn btn-sm ${selectedGenres.includes(genre) ? "btn-primary" : "btn-outline-secondary"}`}
-                            onClick={() => toggleGenre(genre)}
-                          >
-                            {genre}
-                          </button>
-                        ))}
-                      </div>
-                      <label htmlFor="custom-positive-prompt" className="form-label fw-semibold mb-1">
-                        Add positive prompt
-                      </label>
-                      <div className="input-group input-group-sm mb-2">
-                        <input
-                          id="custom-positive-prompt"
-                          type="text"
-                          className="form-control"
-                          value={newPositivePrompt}
-                          onChange={(event) => setNewPositivePrompt(event.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter") {
-                              event.preventDefault();
-                              addCustomPositivePrompt();
+          <div className={payloadMinimized ? "col" : "col-12 col-lg-8 col-xl-9"}>
+            <div className="row g-3">
+              <section className="col-12">
+                <div className="card shadow-sm border-primary-subtle">
+                  <div className="card-body">
+                    <h2 className="h6 text-uppercase text-primary mb-3">Image Composer</h2>
+                    <div className="sequence">
+                      {items.map((item) => (
+                        <article
+                          key={item.id}
+                          className={`image-card ${selectedId === item.id ? "selected" : ""}`}
+                          draggable
+                          onClick={() => setSelectedId(item.id)}
+                          onDragStart={() => setDraggingId(item.id)}
+                          onDragOver={(event) => event.preventDefault()}
+                          onDrop={() => {
+                            if (draggingId) {
+                              moveItem(draggingId, item.id);
                             }
                           }}
-                          placeholder="e.g. evolving strings"
+                          onDragEnd={() => setDraggingId(null)}
+                        >
+                          <div className="image-frame">
+                            <button
+                              type="button"
+                              className="remove-image-btn btn btn-sm btn-danger"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                removeImage(item.id);
+                              }}
+                              aria-label={`Remove ${item.name}`}
+                              title="Remove image"
+                            >
+                              x
+                            </button>
+                            <img src={item.src} alt={item.name} />
+                            <p className="emotion-tag">{item.analyzing ? "Analyzing..." : item.emotion}</p>
+                            <div
+                              className="duration-inline"
+                              onClick={(event) => event.stopPropagation()}
+                              onMouseDown={(event) => event.stopPropagation()}
+                              onDoubleClick={() => setDurationEditingId(item.id)}
+                              title="Double click to edit duration"
+                            >
+                              {durationEditingId === item.id ? (
+                                <>
+                                  <span>s</span>
+                                  <input
+                                    autoFocus
+                                    type="number"
+                                    min={1}
+                                    step={1}
+                                    value={item.durationSec ?? ""}
+                                    onChange={(event) => onItemDurationChange(item.id, event.target.value)}
+                                    onBlur={stopDurationEditing}
+                                    onKeyDown={(event) => {
+                                      if (event.key === "Enter" || event.key === "Escape") {
+                                        stopDurationEditing();
+                                      }
+                                    }}
+                                    aria-label={`Duration for ${item.name}`}
+                                  />
+                                </>
+                              ) : (
+                                <span className="duration-readout">{item.durationSec ?? 0}s</span>
+                              )}
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+
+                      <article
+                        className="image-card add-card"
+                        role="button"
+                        tabIndex={0}
+                        onClick={openFilePicker}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            openFilePicker();
+                          }
+                        }}
+                        aria-label="Add a new image"
+                      >
+                        <span className="plus">+</span>
+                      </article>
+                    </div>
+                    <div className="row g-3 mt-2">
+                      <div className="col-6">
+                        <textarea
+                          id="prompt-editor"
+                          className="form-control prompt-editor"
+                          value={selectedItem?.emotion ?? ""}
+                          onChange={(event) => onPromptChange(event.target.value)}
+                          placeholder="Click an image to edit its emotion"
                         />
-                        <button type="button" className="btn btn-outline-primary" onClick={addCustomPositivePrompt}>
-                          Add
-                        </button>
                       </div>
-                      {customPositivePrompts.length > 0 && (
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section className="col-12">
+                <div className="card shadow-sm border-primary-subtle">
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="d-flex flex-wrap gap-2">
+                        <button className="btn btn-primary" onClick={onSendPrompt}>
+                          Generate
+                        </button>
+                        <button className="btn btn-outline-secondary" onClick={onExportComposition}>
+                          Export
+                        </button>
+                        <button className="btn btn-outline-secondary" onClick={openImportPicker}>
+                          Import
+                        </button>
+                        <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
+                          {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
+                        </button>
+                          <button className="btn btn-outline-primary" onClick={onRegeneratePrompts}>
+                            Re analize images
+                          </button>
+                      </div>
+                      <div className="row">
+                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                      </div>
+                      <div className="row">
+                        {audioUrl && (
+                          <div className="d-grid gap-2">
+                            <audio controls src={audioUrl} className="w-100" />
+                            <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
+                              Download Audio
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="row">
+                        <div className="col-3 col-lg-8">
+                          <label>{balanceLabel}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section className="col-12">
+                <div className="card shadow-sm border-primary-subtle">
+                  <div className="card-body">
+                    <h1 className="h4 mb-3">Image Sound Composer {totalDurationSec} seconds</h1>
+                    <div className="row mb-3">
+                      <div className="col-12">
+                        <label htmlFor="general-prompt" className="form-label fw-semibold mb-1">
+                          General Prompt
+                        </label>
+                        <input
+                          id="general-prompt"
+                          type="text"
+                          className="form-control"
+                          value={generalPrompt}
+                          onChange={(event) => setGeneralPrompt(event.target.value)}
+                          placeholder="e.g. evolving atmosphere, gradual build, no vocals"
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
                         <div className="genre-list mb-2">
-                          {customPositivePrompts.map((prompt) => (
+                          {GENRE_OPTIONS.map((genre) => (
+                            <button
+                              key={genre}
+                              type="button"
+                              className={`btn btn-sm ${selectedGenres.includes(genre) ? "btn-primary" : "btn-outline-secondary"}`}
+                              onClick={() => toggleGenre(genre)}
+                            >
+                              {genre}
+                            </button>
+                          ))}
+                        </div>
+                        <label htmlFor="custom-positive-prompt" className="form-label fw-semibold mb-1">
+                          Add positive prompt
+                        </label>
+                        <div className="input-group input-group-sm mb-2">
+                          <input
+                            id="custom-positive-prompt"
+                            type="text"
+                            className="form-control"
+                            value={newPositivePrompt}
+                            onChange={(event) => setNewPositivePrompt(event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.preventDefault();
+                                addCustomPositivePrompt();
+                              }
+                            }}
+                            placeholder="e.g. evolving strings"
+                          />
+                          <button type="button" className="btn btn-outline-primary" onClick={addCustomPositivePrompt}>
+                            Add
+                          </button>
+                        </div>
+                        {customPositivePrompts.length > 0 && (
+                          <div className="genre-list mb-2">
+                            {customPositivePrompts.map((prompt) => (
+                              <button
+                                key={prompt}
+                                type="button"
+                                className="btn btn-sm btn-primary"
+                                onClick={() => removeCustomPositivePrompt(prompt)}
+                                title="Remove custom positive prompt"
+                              >
+                                {prompt}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                      </div>
+                      <div className="col-6">
+                        <label className="form-label fw-semibold mb-2">Negative Prompts</label>
+                        <div className="genre-list mb-2">
+                          {NEGATIVE_PROMPT_OPTIONS.map((prompt) => (
                             <button
                               key={prompt}
                               type="button"
-                              className="btn btn-sm btn-primary"
-                              onClick={() => removeCustomPositivePrompt(prompt)}
-                              title="Remove custom positive prompt"
+                              className={`btn btn-sm ${selectedNegativePrompts.includes(prompt) ? "btn-danger" : "btn-outline-secondary"}`}
+                              onClick={() => toggleNegativePrompt(prompt)}
                             >
                               {prompt}
                             </button>
                           ))}
                         </div>
-                      )}
-
-                    </div>
-                    <div className="col-6">
-                      <label className="form-label fw-semibold mb-2">Negative Prompts</label>
-                      <div className="genre-list mb-2">
-                        {NEGATIVE_PROMPT_OPTIONS.map((prompt) => (
-                          <button
-                            key={prompt}
-                            type="button"
-                            className={`btn btn-sm ${selectedNegativePrompts.includes(prompt) ? "btn-danger" : "btn-outline-secondary"}`}
-                            onClick={() => toggleNegativePrompt(prompt)}
-                          >
-                            {prompt}
+                        <label htmlFor="custom-negative-prompt" className="form-label fw-semibold mb-1">
+                          Add negative prompt
+                        </label>
+                        <div className="input-group input-group-sm mb-2">
+                          <input
+                            id="custom-negative-prompt"
+                            type="text"
+                            className="form-control"
+                            value={newNegativePrompt}
+                            onChange={(event) => setNewNegativePrompt(event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.preventDefault();
+                                addCustomNegativePrompt();
+                              }
+                            }}
+                            placeholder="e.g. heavy vocals"
+                          />
+                          <button type="button" className="btn btn-outline-danger" onClick={addCustomNegativePrompt}>
+                            Add
                           </button>
-                        ))}
-                      </div>
-                      <label htmlFor="custom-negative-prompt" className="form-label fw-semibold mb-1">
-                        Add negative prompt
-                      </label>
-                      <div className="input-group input-group-sm mb-2">
-                        <input
-                          id="custom-negative-prompt"
-                          type="text"
-                          className="form-control"
-                          value={newNegativePrompt}
-                          onChange={(event) => setNewNegativePrompt(event.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter") {
-                              event.preventDefault();
-                              addCustomNegativePrompt();
-                            }
-                          }}
-                          placeholder="e.g. heavy vocals"
-                        />
-                        <button type="button" className="btn btn-outline-danger" onClick={addCustomNegativePrompt}>
-                          Add
-                        </button>
-                      </div>
-                      {customNegativePrompts.length > 0 && (
-                        <div className="genre-list mb-2">
-                          {customNegativePrompts.map((prompt) => (
-                            <button
-                              key={prompt}
-                              type="button"
-                              className="btn btn-sm btn-danger"
-                              onClick={() => removeCustomNegativePrompt(prompt)}
-                              title="Remove custom negative prompt"
-                            >
-                              {prompt} 
-                            </button>
-                          ))}
                         </div>
-                      )}
+                        {customNegativePrompts.length > 0 && (
+                          <div className="genre-list mb-2">
+                            {customNegativePrompts.map((prompt) => (
+                              <button
+                                key={prompt}
+                                type="button"
+                                className="btn btn-sm btn-danger"
+                                onClick={() => removeCustomNegativePrompt(prompt)}
+                                title="Remove custom negative prompt"
+                              >
+                                {prompt}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    <input
+                      ref={importInputRef}
+                      type="file"
+                      accept="application/json"
+                      onChange={(event) => {
+                        onImportComposition(event.target.files);
+                        event.currentTarget.value = "";
+                      }}
+                      aria-label="Import composition"
+                      className="d-none"
+                    />
                   </div>
-
-                  <input
-                    ref={importInputRef}
-                    type="file"
-                    accept="application/json"
-                    onChange={(event) => {
-                      onImportComposition(event.target.files);
-                      event.currentTarget.value = "";
-                    }}
-                    aria-label="Import composition"
-                    className="d-none"
-                  />
                 </div>
-              </div>
-            </section>
-
+              </section>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+
+      <aside className={`floating-prompt-panel card shadow-sm border-primary-subtle ${promptPanelMinimized ? "minimized" : ""}`}>
+        {!promptPanelMinimized ? (
+          <div className="card-body">
+            <div className="d-flex align-items-center justify-content-between mb-2">
+              <h2 className="h6 text-uppercase text-primary mb-0">Prompt Tags</h2>
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => setPromptPanelMinimized(true)}
+                aria-label="Minimize prompt tags panel"
+              >
+                Minimize
+              </button>
+            </div>
+            <p className="small fw-semibold mb-2">General Prompt</p>
+            <div className="floating-tags">
+              {generalPromptTags.length ? (
+                generalPromptTags.map((tag) => (
+                  <span key={`general-${tag}`} className="badge text-bg-primary">
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="text-muted small">No general prompt tags yet.</span>
+              )}
+            </div>
+            <hr className="my-3" />
+            <p className="small fw-semibold mb-2">Selected Image</p>
+            {selectedItem ? (
+              <div className="selected-mini-card">
+                <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
+                <div className="floating-tags mt-2">
+                  {selectedPromptTags.length ? (
+                    selectedPromptTags.map((tag) => (
+                      <span key={`${selectedItem.id}-${tag}`} className="badge text-bg-secondary">
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-muted small">No prompt tags for this image.</span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <span className="text-muted small">Select an image to preview it here.</span>
+            )}
+          </div>
+        ) : (
+          <button
+            className="prompt-panel-restore btn btn-outline-primary"
+            onClick={() => setPromptPanelMinimized(false)}
+            aria-label="Expand prompt tags panel"
+            title="Expand prompt tags panel"
+          >
+            Prompt Tags
+          </button>
+        )}
+      </aside>
+    </>
   );
 }
