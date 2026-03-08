@@ -4,6 +4,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #f7fbff;
+  padding-bottom: 96px;
 }
 
 .material-symbols-outlined {
@@ -69,6 +70,40 @@ body {
 .text-bg-primary {
   color: #ffffff !important;
   background-color: #212121 !important;
+}
+
+.btn-danger {
+  --bs-btn-bg: #616161;
+  --bs-btn-border-color: #616161;
+  --bs-btn-hover-bg: #424242;
+  --bs-btn-hover-border-color: #424242;
+  --bs-btn-active-bg: #212121;
+  --bs-btn-active-border-color: #212121;
+  --bs-btn-disabled-bg: #9e9e9e;
+  --bs-btn-disabled-border-color: #9e9e9e;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #424242;
+  --bs-btn-border-color: #616161;
+  --bs-btn-hover-bg: #616161;
+  --bs-btn-hover-border-color: #616161;
+  --bs-btn-active-bg: #424242;
+  --bs-btn-active-border-color: #424242;
+}
+
+.text-danger-emphasis {
+  color: #424242 !important;
+}
+
+audio {
+  color-scheme: light;
+}
+
+
+.text-bg-danger {
+  color: #ffffff !important;
+  background-color: #616161 !important;
 }
 
 
@@ -263,6 +298,47 @@ body {
   line-height: 1;
 }
 
+.persistent-player-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1040;
+  border-top: 1px solid #d6d6d6;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+}
+
+.persistent-player-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 12px;
+}
+
+.custom-player {
+  display: grid;
+  grid-template-columns: auto auto minmax(220px, 1fr) auto auto 120px auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.custom-player input[type="range"] {
+  width: 100%;
+  accent-color: #212121;
+}
+
+.custom-player-time {
+  min-width: 2.75rem;
+  font-size: 0.85rem;
+  color: #424242;
+  text-align: center;
+}
+
+.custom-player-volume-icon {
+  color: #616161;
+  font-size: 1.1rem;
+}
+
 @media (max-width: 991.98px) {
   .floating-prompt-panel {
     position: static;
@@ -289,5 +365,26 @@ body {
     min-height: auto;
     writing-mode: horizontal-tb;
     transform: none;
+  }
+
+  .persistent-player-inner {
+    padding: 8px 10px;
+  }
+
+  .custom-player {
+    grid-template-columns: auto minmax(120px, 1fr) auto;
+    gap: 8px;
+  }
+
+  .custom-player .custom-player-time {
+    display: none;
+  }
+
+  .custom-player .custom-player-volume-icon {
+    display: none;
+  }
+
+  .custom-player .custom-player-volume {
+    display: none;
   }
 }

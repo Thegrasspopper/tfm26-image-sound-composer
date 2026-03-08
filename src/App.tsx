@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { analyzeImageEmotionWithClaude } from "./claude";
+import CustomAudioPlayer from "./CustomAudioPlayer";
 import {  revokeAudioUrl, sendPromptToElevenLabs } from "./elevenlabs";
 import { analyzeImageEmotion, type EmotionResult } from "./gemini";
 import { buildMusicPromptFromImages, fileToDataUrl, splitDataUrl } from "./utils";
@@ -812,20 +813,10 @@ export default function App() {
                   </div>
                 </div>
               </section>
-                      
+
               <section className="col-12">
                     <div className="row">
                         {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                      </div>
-                      <div className="row">
-                        {audioUrl && (
-                          <div className="d-grid gap-2">
-                            <audio controls src={audioUrl} className="w-100" />
-                            <button className="btn btn-success btn-sm" onClick={onDownloadAudio}>
-                              Download Audio
-                            </button>
-                          </div>
-                        )}
                       </div>
               </section>
 
@@ -941,6 +932,18 @@ export default function App() {
                       </div>
                     </div>
                     <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(event) => {
+                        onFilesPicked(event.target.files);
+                        event.currentTarget.value = "";
+                      }}
+                      aria-label="Add images"
+                      className="d-none"
+                    />
+                    <input
                       ref={importInputRef}
                       type="file"
                       accept="application/json"
@@ -1041,6 +1044,13 @@ export default function App() {
           </button>
         )}
       </aside>
+
+      <div className="persistent-player-bar">
+        <div className="persistent-player-inner">
+          <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
+        </div>
+      </div>
+
     </>
   );
 }
