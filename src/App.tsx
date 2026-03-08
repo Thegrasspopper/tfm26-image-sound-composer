@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { analyzeImageEmotionWithClaude } from "./claude";
-import { getElevenLabsCharacterBalance, revokeAudioUrl, sendPromptToElevenLabs } from "./elevenlabs";
+import {  revokeAudioUrl, sendPromptToElevenLabs } from "./elevenlabs";
 import { analyzeImageEmotion, type EmotionResult } from "./gemini";
 import { buildMusicPromptFromImages, fileToDataUrl, splitDataUrl } from "./utils";
 
@@ -102,8 +102,6 @@ export default function App() {
   const [forceInstrumental, setForceInstrumental] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
   const [audioUrl, setAudioUrl] = useState<string>("");
-  const [balanceLabel, setBalanceLabel] = useState<string>("Balance: --");
-  const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -665,18 +663,6 @@ export default function App() {
     }
   }
 
-  async function refreshElevenLabsBalance() {
-    try {
-      setLoadingBalance(true);
-      const balance = await getElevenLabsCharacterBalance();
-      setBalanceLabel(`Balance: ${balance.remaining.toLocaleString()} / ${balance.limit.toLocaleString()}`);
-    } catch (error) {
-      setBalanceLabel(error instanceof Error ? `Balance: ${error.message}` : "Balance: unavailable");
-    } finally {
-      setLoadingBalance(false);
-    }
-  }
-
   function onDownloadAudio() {
     if (!audioUrl) {
       setStatus("No generated audio available to download.");
@@ -820,11 +806,13 @@ export default function App() {
                         >
                           <span className="material-symbols-outlined" aria-hidden="true">upload</span>
                         </button>
-                        <button className="btn btn-outline-primary" onClick={refreshElevenLabsBalance} disabled={loadingBalance}>
-                          {loadingBalance ? "Refreshing balance..." : "Refresh Balance"}
-                        </button>
-                          <button className="btn btn-outline-primary" onClick={onRegeneratePrompts}>
-                            Re analize images
+                          <button
+                            className="btn btn-outline-primary btn-icon"
+                            onClick={onRegeneratePrompts}
+                            aria-label="Re analyze images"
+                            title="Re analyze images"
+                          >
+                            <span className="material-symbols-outlined" aria-hidden="true">refresh</span>
                           </button>
                       </div>
                       <div className="row">
@@ -840,11 +828,6 @@ export default function App() {
                           </div>
                         )}
                       </div>
-                      <div className="row">
-                        <div className="col-3 col-lg-8">
-                          <label>{balanceLabel}</label>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -854,21 +837,6 @@ export default function App() {
                 <div className="card shadow-sm border-primary-subtle">
                   <div className="card-body">
                     <h1 className="h4 mb-3">Image Sound Composer {totalDurationSec} seconds</h1>
-                    <div className="row mb-3">
-                      <div className="col-12">
-                        <label htmlFor="general-prompt" className="form-label fw-semibold mb-1">
-                          General Prompt
-                        </label>
-                        <input
-                          id="general-prompt"
-                          type="text"
-                          className="form-control"
-                          value={generalPrompt}
-                          onChange={(event) => setGeneralPrompt(event.target.value)}
-                          placeholder="e.g. evolving atmosphere, gradual build, no vocals"
-                        />
-                      </div>
-                    </div>
                     <div className="row">
                       <div className="col-6">
                         <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
