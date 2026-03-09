@@ -799,17 +799,6 @@ export default function App() {
                         <span className="plus">+</span>
                       </article>
                     </div>
-                    <div className="row g-3 mt-2">
-                      <div className="col-6">
-                        <textarea
-                          id="prompt-editor"
-                          className="form-control prompt-editor"
-                          value={selectedItem?.emotion ?? ""}
-                          onChange={(event) => onPromptChange(event.target.value)}
-                          placeholder="Click an image to edit its emotion"
-                        />
-                      </div>
-                    </div>
                   </div>
                 </div>
               </section>

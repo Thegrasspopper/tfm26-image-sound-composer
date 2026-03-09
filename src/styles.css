@@ -260,15 +260,14 @@ audio {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 0.85rem;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(236, 244, 255, 0.88);
-  border: 1px solid #212121;
-  backdrop-filter: blur(1px);
+  border: 0.5px solid #fff;
   text-align: center;
   max-width: calc(100% - 16px);
+  color: #fff;
 }
 
 .duration-inline {
@@ -318,7 +317,7 @@ audio {
 }
 
 .add-card {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   display: grid;
   place-content: center;
   border: 1px dashed #212121;
@@ -326,6 +325,9 @@ audio {
   color: #212121;
   cursor: pointer;
   user-select: none;
+  border-radius: 8px;
+  margin-top: 8px;
+  max-height: 170px;
 }
 
 .add-card .plus {
