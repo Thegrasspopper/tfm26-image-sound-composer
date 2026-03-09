@@ -814,11 +814,16 @@ export default function App() {
                 </div>
               </section>
 
+              <section className="offset-2 col-8">
+                  <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
+              </section>
+
               <section className="col-12">
                     <div className="row">
                         {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
                       </div>
               </section>
+
 
               <section className="col-12">
                 <div className="card shadow-sm border-primary-subtle">
@@ -1044,12 +1049,6 @@ export default function App() {
           </button>
         )}
       </aside>
-
-      <div className="persistent-player-bar">
-        <div className="persistent-player-inner">
-          <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
-        </div>
-      </div>
 
     </>
   );
