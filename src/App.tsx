@@ -808,13 +808,6 @@ export default function App() {
               </section>
 
               <section className="col-12">
-                    <div className="row">
-                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                      </div>
-              </section>
-
-
-              <section className="col-12">
                 <div className="card shadow-sm border-primary-subtle">
                   <div className="card-body">
                     <h1 className="h4 mb-3">Image Sound Composer {totalDurationSec} seconds</h1>
@@ -951,6 +944,14 @@ export default function App() {
                   </div>
                 </div>
               </section>
+
+              
+              <section className="col-12">
+                    <div className="row">
+                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                      </div>
+              </section>
+
             </div>
         </div>
       </main>
