@@ -7,6 +7,49 @@ body {
   padding-bottom: 96px;
 }
 
+html,
+body,
+.floating-prompt-panel,
+.payload-preview {
+  scrollbar-width: thin;
+  scrollbar-color: #9aa4b2 rgba(255, 255, 255, 0.28);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #9aa4b2 rgba(255, 255, 255, 0.28);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.floating-prompt-panel::-webkit-scrollbar,
+.payload-preview::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.floating-prompt-panel::-webkit-scrollbar-track,
+.payload-preview::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.floating-prompt-panel::-webkit-scrollbar-thumb,
+.payload-preview::-webkit-scrollbar-thumb {
+  background: #9aa4b2;
+  border-radius: 999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.floating-prompt-panel::-webkit-scrollbar-thumb:hover,
+.payload-preview::-webkit-scrollbar-thumb:hover {
+  background: #7f8a99;
+}
+
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined";
   font-weight: normal;
