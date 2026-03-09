@@ -807,13 +807,97 @@ export default function App() {
                   <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
               </section>
 
+              
+              <section className="col-12">
+                    <div className="row">
+                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                      </div>
+              </section>
+
+            </div>
+        </div>
+      </main>
+
+      <aside className={`floating-prompt-panel card shadow-sm border-primary-subtle ${promptPanelMinimized ? "minimized" : ""}`}>
+        {!promptPanelMinimized ? (
+          <div className="card-body">
+            <div className="d-flex align-items-center justify-content-between mb-2">
+              <h2 className="h6 text-uppercase text-primary mb-0">Prompt Tags</h2>
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => setPromptPanelMinimized(true)}
+                aria-label="Minimize prompt tags panel"
+              >
+                -
+              </button>
+            </div>
+            <p className="small fw-semibold mb-2">General Prompt</p>
+            <p className="small mb-1 text-primary-emphasis">Positive</p>
+            <div className="floating-tags mb-2">
+              {musicPrompt.positiveGlobalStyles.length ? (
+                musicPrompt.positiveGlobalStyles.map((tag) => (
+                  <span key={`global-positive-${tag}`} className="badge text-bg-primary">
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="text-muted small">No positive global styles yet.</span>
+              )}
+            </div>
+            <p className="small mb-1 text-danger-emphasis">Negative</p>
+            <div className="floating-tags">
+              {musicPrompt.negativeGlobalStyles.length ? (
+                musicPrompt.negativeGlobalStyles.map((tag) => (
+                  <span key={`global-negative-${tag}`} className="badge text-bg-danger">
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="text-muted small">No negative global styles yet.</span>
+              )}
+            </div>
+            <hr className="my-3" />
+            <p className="small fw-semibold mb-2">Selected Image</p>
+            {selectedItem ? (
+              <div className="selected-mini-card">
+                <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
+                <p className="small mb-1 mt-2 text-primary-emphasis">Positive</p>
+                <div className="floating-tags mb-2">
+                  {selectedSection?.positiveLocalStyles.length ? (
+                    selectedSection.positiveLocalStyles.map((tag, index) => (
+                      <span key={`${selectedItem.id}-pos-${tag}-${index}`} className="badge text-bg-primary">
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-muted small">No positive local styles for this image.</span>
+                  )}
+                </div>
+                <p className="small mb-1 text-danger-emphasis">Negative</p>
+                <div className="floating-tags">
+                  {selectedSection?.negativeLocalStyles.length ? (
+                    selectedSection.negativeLocalStyles.map((tag, index) => (
+                      <span key={`${selectedItem.id}-neg-${tag}-${index}`} className="badge text-bg-danger">
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-muted small">No negative local styles for this image.</span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <span className="text-muted small">Select an image to preview it here.</span>
+            )}
+            <hr className="my-3" />
+
               <section className="col-12">
                 <div className="card shadow-sm border-primary-subtle">
                   <div className="card-body">
-                    <h1 className="h4 mb-3">Image Sound Composer {totalDurationSec} seconds</h1>
+                    <h1 className="h4 mb-3">Total {totalDurationSec} seconds</h1>
                     <div className="row">
                       <div className="col-6">
-                        <label className="form-label fw-semibold mb-2">Positive Global Styles (Genres)</label>
+                        <label className="form-label fw-semibold mb-2">Positive Global Styles</label>
                         <div className="genre-list mb-2">
                           {GENRE_OPTIONS.map((genre) => (
                             <button
@@ -944,89 +1028,6 @@ export default function App() {
                   </div>
                 </div>
               </section>
-
-              
-              <section className="col-12">
-                    <div className="row">
-                        {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                      </div>
-              </section>
-
-            </div>
-        </div>
-      </main>
-
-      <aside className={`floating-prompt-panel card shadow-sm border-primary-subtle ${promptPanelMinimized ? "minimized" : ""}`}>
-        {!promptPanelMinimized ? (
-          <div className="card-body">
-            <div className="d-flex align-items-center justify-content-between mb-2">
-              <h2 className="h6 text-uppercase text-primary mb-0">Prompt Tags</h2>
-              <button
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => setPromptPanelMinimized(true)}
-                aria-label="Minimize prompt tags panel"
-              >
-                -
-              </button>
-            </div>
-            <p className="small fw-semibold mb-2">General Prompt</p>
-            <p className="small mb-1 text-primary-emphasis">Positive</p>
-            <div className="floating-tags mb-2">
-              {musicPrompt.positiveGlobalStyles.length ? (
-                musicPrompt.positiveGlobalStyles.map((tag) => (
-                  <span key={`global-positive-${tag}`} className="badge text-bg-primary">
-                    {tag}
-                  </span>
-                ))
-              ) : (
-                <span className="text-muted small">No positive global styles yet.</span>
-              )}
-            </div>
-            <p className="small mb-1 text-danger-emphasis">Negative</p>
-            <div className="floating-tags">
-              {musicPrompt.negativeGlobalStyles.length ? (
-                musicPrompt.negativeGlobalStyles.map((tag) => (
-                  <span key={`global-negative-${tag}`} className="badge text-bg-danger">
-                    {tag}
-                  </span>
-                ))
-              ) : (
-                <span className="text-muted small">No negative global styles yet.</span>
-              )}
-            </div>
-            <hr className="my-3" />
-            <p className="small fw-semibold mb-2">Selected Image</p>
-            {selectedItem ? (
-              <div className="selected-mini-card">
-                <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
-                <p className="small mb-1 mt-2 text-primary-emphasis">Positive</p>
-                <div className="floating-tags mb-2">
-                  {selectedSection?.positiveLocalStyles.length ? (
-                    selectedSection.positiveLocalStyles.map((tag, index) => (
-                      <span key={`${selectedItem.id}-pos-${tag}-${index}`} className="badge text-bg-primary">
-                        {tag}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-muted small">No positive local styles for this image.</span>
-                  )}
-                </div>
-                <p className="small mb-1 text-danger-emphasis">Negative</p>
-                <div className="floating-tags">
-                  {selectedSection?.negativeLocalStyles.length ? (
-                    selectedSection.negativeLocalStyles.map((tag, index) => (
-                      <span key={`${selectedItem.id}-neg-${tag}-${index}`} className="badge text-bg-danger">
-                        {tag}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-muted small">No negative local styles for this image.</span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <span className="text-muted small">Select an image to preview it here.</span>
-            )}
           </div>
         ) : (
           <button

@@ -79,6 +79,18 @@ body::-webkit-scrollbar-thumb:hover,
   padding: 0;
 }
 
+.badge{
+    padding: 0.25em 0.5em;
+    font-size: 0.75em;
+    font-weight: 700;
+}
+
+.btn-sm{
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+}
+
 
 .btn-primary {
   --bs-btn-bg: #212121;
@@ -418,6 +430,40 @@ audio {
 .custom-player input[type="range"] {
   width: 100%;
   accent-color: #212121;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+.custom-player input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #d6d6d6;
+  border-radius: 999px;
+}
+
+.custom-player input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: #212121;
+  margin-top: -6px;
+  border: none;
+}
+
+.custom-player input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: #d6d6d6;
+  border-radius: 999px;
+}
+
+.custom-player input[type="range"]::-moz-range-thumb {
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: #212121;
+  border: none;
 }
 
 .custom-player-time {
