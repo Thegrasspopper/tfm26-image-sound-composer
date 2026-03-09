@@ -745,7 +745,7 @@ export default function App() {
                               aria-label={`Remove ${item.name}`}
                               title="Remove image"
                             >
-                              x
+                              X
                             </button>
                             <img src={item.src} alt={item.name} />
                             <p className="emotion-tag">{item.analyzing ? "Analyzing..." : item.emotion}</p>

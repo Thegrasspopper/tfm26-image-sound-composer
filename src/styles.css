@@ -67,7 +67,7 @@ body {
 
 .btn-outline-secondary {
   color: #000000 !important;
-  background-color: #ffffff !important;
+  background-color: #fff0 !important;
   border: #000000 1px solid;
   border-radius: 999px;
 }
@@ -78,23 +78,22 @@ body {
 
 .text-bg-primary {
   color: #000000 !important;
-  background-color: #ffffff !important;
+  background-color: #fff0 !important;
   border: #000000 1px solid;
   border-radius: 999px;
 }
 
 .btn-danger {
   color: #212121 !important;
-  background-color: #f7fbff;
+  background-color: #fff0 !important;
   border: #000000 1px solid;
   border-radius: 999px;
 
 }
 
-btn-danger:hover {
+.btn-danger:hover {
   color: #212121 !important;
   background-color: #f7fbff;
-  border: #000000 1px solid;
   border-radius: 999px;
 }
 
@@ -123,10 +122,10 @@ audio {
 
 
 .text-bg-danger {
-  color: #616161 !important;
-  background-color: #ffffff !important;
+  color: #313131 !important;
+  background-color: #fff0 !important;
   border-radius: 999px;
-  border: #000000 1px solid;
+  border: #313131 1px solid;
 
 }
 
@@ -137,12 +136,21 @@ audio {
 
 .floating-prompt-panel {
   position: fixed;
-  right: 16px;
-  top: 16px;
-  width: min(300px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
+  right: 0px;
+  top: 0px;
+  width: min(450px, calc(100vw - 32px));
+  height: 100%;
   overflow: auto;
   z-index: 1030;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.floating-prompt-panel .card-body {
+  background: transparent;
 }
 
 .floating-prompt-panel.minimized {
@@ -164,15 +172,13 @@ audio {
 }
 
 .selected-mini-card {
-  border: 1px solid #212121;
+  border: none;
   border-radius: 10px;
   padding: 8px;
-  background: #f7fbff;
 }
 
 .selected-mini-image {
-  width: 100%;
-  max-height: 140px;
+  width: 30%;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -252,6 +258,13 @@ audio {
   height: 26px;
   padding: 0;
   line-height: 1;
+  border: none;
+  color: #fff !important;
+}
+
+.remove-image-btn :hover{
+    border: none !important;
+    color: #525252 !important;
 }
 
 .emotion-tag {
