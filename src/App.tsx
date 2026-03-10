@@ -803,10 +803,9 @@ export default function App() {
                 </div>
               </section>
 
-              <section className="offset-2 col-8">
+              <section className="col-8">
                   <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
               </section>
-
               
               <section className="col-12">
                     <div className="row">
@@ -1012,7 +1011,7 @@ export default function App() {
                         event.currentTarget.value = "";
                       }}
                       aria-label="Add images"
-                      className="d-none"
+                      style={{ position: "absolute", left: "-9999px", pointerEvents: "auto" }}
                     />
                     <input
                       ref={importInputRef}
@@ -1023,7 +1022,7 @@ export default function App() {
                         event.currentTarget.value = "";
                       }}
                       aria-label="Import composition"
-                      className="d-none"
+                      style={{ position: "absolute", left: "-9999px", pointerEvents: "auto" }}
                     />
                   </div>
                 </div>
