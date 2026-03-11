@@ -104,6 +104,7 @@ export default function App() {
   const [audioUrl, setAudioUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     return () => {
@@ -415,6 +416,10 @@ export default function App() {
     importInputRef.current?.click();
   }
 
+  function openAudioPicker() {
+    audioInputRef.current?.click();
+  }
+
   function getSectionName(sectionIndex: number, totalSections: number): string {
     if (sectionIndex === 1) {
       return "Intro";
@@ -644,6 +649,19 @@ export default function App() {
     }
   }
 
+  async function onAudioPicked(fileList: FileList | null) {
+    const file = fileList?.[0];
+    if (!file) {
+      return;
+    }
+    if (audioUrl) {
+      revokeAudioUrl(audioUrl);
+    }
+    const url = URL.createObjectURL(file);
+    setAudioUrl(url);
+    setStatus(`Audio imported (${file.name}).`);
+  }
+
   async function onSendPrompt() {
     if (!musicPrompt.sections.length) {
       setStatus("Nothing to send. Add images first.");
@@ -701,6 +719,14 @@ export default function App() {
                           title="Import composition"
                         >
                           <span className="material-symbols-outlined" aria-hidden="true">upload</span>
+                        </button>
+                        <button
+                          className="btn btn-outline-secondary btn-icon"
+                          onClick={openAudioPicker}
+                          aria-label="Import audio"
+                          title="Import audio"
+                        >
+                          <span className="material-symbols-outlined" aria-hidden="true">library_music</span>
                         </button>
                           <button
                             className="btn btn-outline-primary btn-icon"
@@ -1022,6 +1048,17 @@ export default function App() {
                         event.currentTarget.value = "";
                       }}
                       aria-label="Import composition"
+                      style={{ position: "absolute", left: "-9999px", pointerEvents: "auto" }}
+                    />
+                    <input
+                      ref={audioInputRef}
+                      type="file"
+                      accept="audio/*"
+                      onChange={(event) => {
+                        onAudioPicked(event.target.files);
+                        event.currentTarget.value = "";
+                      }}
+                      aria-label="Import audio"
                       style={{ position: "absolute", left: "-9999px", pointerEvents: "auto" }}
                     />
                   </div>
