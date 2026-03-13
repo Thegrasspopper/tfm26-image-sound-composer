@@ -280,6 +280,15 @@ audio {
   padding-bottom: 8px;
 }
 
+.sequence.drag-over {
+  background-color: rgba(33, 33, 33, 0.1);
+  border: 2px dashed #212121;
+  border-radius: 8px;
+  padding: 16px;
+  padding-bottom: 24px; /* 16px + 8px original */
+  transition: all 0.2s ease;
+}
+
 .alert-info {
   color: #212121 !important;
   background-color: #fff !important;
@@ -289,7 +298,7 @@ audio {
 
 .image-card {
   height: 180px;
-  min-width: 320px;
+  width: 320px;
   background: #fff;
   padding: 8px;
   cursor: grab;
@@ -302,6 +311,8 @@ audio {
 
 .image-frame {
   position: relative;
+  overflow: hidden;
+  border-radius: 8px;
 }
 
 .remove-image-btn {

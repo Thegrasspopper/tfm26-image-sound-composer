@@ -37,6 +37,7 @@ type ExportFile = {
   customPositivePrompts: string[];
   customNegativePrompts: string[];
   forceInstrumental: boolean;
+  audioUrl?: string;
   items: Array<{
     id: string;
     src: string;
@@ -78,10 +79,19 @@ const NEGATIVE_PROMPT_OPTIONS = [
 ];
 const DEFAULT_IMAGE_DURATION_SEC = 10;
 
+function generateId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export default function App() {
   const [items, setItems] = useState<ImageItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverSequence, setDragOverSequence] = useState<boolean>(false);
   const [durationEditingId, setDurationEditingId] = useState<string | null>(null);
   const [promptPanelMinimized, setPromptPanelMinimized] = useState<boolean>(false);
   const [aiProvider, setAiProvider] = useState<AIProvider>("claude");
@@ -226,7 +236,7 @@ export default function App() {
     return { prompt: mood, positiveLocalStyles, negativeLocalStyles };
   }
 
-  async function onFilesPicked(fileList: FileList | null) {
+  async function onFilesPicked(fileList: FileList | File[] | null) {
     if (!fileList?.length) {
       return;
     }
@@ -237,7 +247,7 @@ export default function App() {
     for (const file of files) {
       const src = await fileToDataUrl(file);
       newItems.push({
-        id: `${file.name}-${crypto.randomUUID()}`,
+        id: `${file.name}-${generateId()}`,
         src,
         name: file.name,
         emotion: "Analyzing...",
@@ -408,6 +418,32 @@ export default function App() {
     });
   }
 
+  function onSequenceDragOver(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragOverSequence(true);
+  }
+
+  function onSequenceDragLeave(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    // Only set to false if we're actually leaving the sequence area
+    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+      setDragOverSequence(false);
+    }
+  }
+
+  function onSequenceDrop(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragOverSequence(false);
+
+    const files = Array.from(event.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    if (files.length > 0) {
+      onFilesPicked(files);
+    }
+  }
+
   function openFilePicker() {
     fileInputRef.current?.click();
   }
@@ -535,7 +571,23 @@ export default function App() {
     setCustomNegativePrompts((prev) => prev.filter((item) => item !== prompt));
   }
 
-  function onExportComposition() {
+  async function getAudioDataUrl(blobUrl: string): Promise<string> {
+    try {
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error("Failed to convert audio to data URL:", error);
+      return "";
+    }
+  }
+
+  async function onExportComposition() {
     const exportData: ExportFile = {
       version: 1,
       exportedAt: new Date().toISOString(),
@@ -558,6 +610,14 @@ export default function App() {
         negativeLocalStyles: item.negativeLocalStyles
       }))
     };
+
+    if (audioUrl) {
+      setStatus("Exporting composition with audio...");
+      const audioDataUrl = await getAudioDataUrl(audioUrl);
+      if (audioDataUrl) {
+        exportData.audioUrl = audioDataUrl;
+      }
+    }
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -594,7 +654,7 @@ export default function App() {
       const importedItems: ImageItem[] = parsed.items
         .filter((item): item is NonNullable<ExportFile["items"][number]> => Boolean(item))
         .map((item) => ({
-          id: typeof item.id === "string" ? item.id : `imported-${crypto.randomUUID()}`,
+          id: typeof item.id === "string" ? item.id : `imported-${generateId()}`,
           src: typeof item.src === "string" ? item.src : "",
           name: typeof item.name === "string" ? item.name : "Imported image",
           emotion: typeof item.emotion === "string" ? item.emotion : "Unknown",
@@ -643,6 +703,12 @@ export default function App() {
           : 120
       );
       setForceInstrumental(Boolean(parsed.forceInstrumental));
+      if (typeof parsed.audioUrl === "string" && parsed.audioUrl) {
+        if (audioUrl) {
+          revokeAudioUrl(audioUrl);
+        }
+        setAudioUrl(parsed.audioUrl);
+      }
       setStatus(`Composition imported (${importedItems.length} images).`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Failed to import composition.");
@@ -744,7 +810,12 @@ export default function App() {
                 <div className="card">
                   <div className="card-body">
                     <h2 className="h6 text-uppercase text-primary mb-3">Image Composer</h2>
-                    <div className="sequence">
+                    <div 
+                      className={`sequence ${dragOverSequence ? 'drag-over' : ''}`}
+                      onDragOver={onSequenceDragOver}
+                      onDragLeave={onSequenceDragLeave}
+                      onDrop={onSequenceDrop}
+                    >
                       {items.map((item) => (
                         <article
                           key={item.id}

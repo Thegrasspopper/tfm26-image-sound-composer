@@ -1,1 +1,1 @@
-{"root":["./vite.config.ts","./src/app.tsx","./src/elevenlabs.ts","./src/gemini.ts","./src/main.tsx","./src/utils.ts","./src/vite-env.d.ts"],"errors":true,"version":"5.9.3"}
+{"root":["./vite.config.ts","./src/app.tsx","./src/customaudioplayer.tsx","./src/claude.ts","./src/elevenlabs.ts","./src/gemini.ts","./src/main.tsx","./src/utils.ts","./src/vite-env.d.ts"],"errors":true,"version":"5.9.3"}
