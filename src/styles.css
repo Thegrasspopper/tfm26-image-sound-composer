@@ -92,6 +92,12 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 
+.btn-clean {
+  border-color: none;
+
+}
+
+
 .btn-primary {
   --bs-btn-bg: #212121;
   --bs-btn-border-color: #212121;
