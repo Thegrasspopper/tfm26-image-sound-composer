@@ -979,7 +979,8 @@ export default function App() {
             <section className="col-3">
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
-                  <h2 className="h6 text-uppercase text-primary mb-3">Prompt Tags</h2>
+                  <h2 className="h6 text-uppercase text-primary mb-3">Tags</h2>
+                  <hr className="my-3" />
                   <p className="small fw-semibold mb-2">General Prompt</p>
                   <p className="small mb-1 text-primary-emphasis">Positive</p>
                   <div className="floating-tags mb-2">
@@ -1027,10 +1028,12 @@ export default function App() {
                       placeholder="+ add prompt"
                     />
                   </div>
-                  <hr className="my-3" />
-                  <p className="small fw-semibold mb-2">Selected Image</p>
+
                   {selectedItem ? (
                     <div className="selected-mini-card">
+                      
+                  <h2 className="h6 fw-semibold mb-2 pt-10">Selected Image</h2>
+                  <hr className="my-3" />
                       <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
                       <p className="small mb-1 mt-2 text-primary-emphasis">Positive</p>
                       <div className="floating-tags mb-2">
@@ -1080,22 +1083,25 @@ export default function App() {
                       </div>
                     </div>
                   ) : (
-                    <span className="text-muted small">Select an image to preview it here.</span>
+                    <div> 
+                    <hr className="my-3" /><span className="text-muted small">Select an image to preview it here.</span>
+                    </div>
                   )}
                 </div>
               </div>
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
-                  <h2 className="h5 mb-3">Total {totalDurationSec} seconds</h2>
+                  <h2 className="h5 mb-3">Inspirational Tags</h2>
+                    <hr className="my-3" />
                   <div className="row">
-                    <div className="col-6">
+                    <div className="col-12">
                       <label className="form-label fw-semibold mb-2">Positive Global Styles</label>
                       <div className="genre-list mb-2">
                         {GENRE_OPTIONS.map((genre) => (
                           <button
                             key={genre}
                             type="button"
-                            className={`badge  btn-sm ${selectedGenres.includes(genre) ? "btn-primary tag-removable" : "btn-outline-secondary"}`}
+                            className={`badge btn-sm ${selectedGenres.includes(genre) ? "btn-primary tag-removable" : "btn-outline-secondary"}`}
                             onClick={() => toggleGenre(genre)}
                           >
                             {genre}
@@ -1130,7 +1136,7 @@ export default function App() {
                         />
                       </div>
                     </div>
-                    <div className="col-6">
+                    <div className="col-12">
                       <label className="form-label fw-semibold mb-2">Negative Prompts</label>
                       <div className="genre-list mb-2">
                         {NEGATIVE_PROMPT_OPTIONS.map((prompt) => (
@@ -1214,6 +1220,7 @@ export default function App() {
             <section className="col-8">
               <div className="row">
                 {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+                Total {totalDurationSec} seconds
               </div>
             </section>
 
