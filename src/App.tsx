@@ -977,7 +977,7 @@ export default function App() {
             </section>
 
             <section className="col-3">
-              <div className="card shadow-sm border-primary-subtle h-100">
+              <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
                   <h2 className="h6 text-uppercase text-primary mb-3">Prompt Tags</h2>
                   <p className="small fw-semibold mb-2">General Prompt</p>
