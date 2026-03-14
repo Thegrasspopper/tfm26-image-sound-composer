@@ -98,7 +98,7 @@ export default function CustomAudioPlayer({ src, onDownload }: CustomAudioPlayer
       <audio ref={audioRef} src={src} preload="metadata" />
       <button
         type="button"
-        className="btn btn-outline-primary btn-icon"
+        className="btn-clean btn-icon"
         onClick={() => {
           void togglePlay();
         }}
@@ -123,6 +123,7 @@ export default function CustomAudioPlayer({ src, onDownload }: CustomAudioPlayer
         onChange={(event) => handleSeek(Number(event.target.value))}
         disabled={!hasAudio}
         aria-label="Seek audio"
+        style={{ "--seek-pct": `${safeDuration > 0 ? (currentTime / safeDuration) * 100 : 0}%` } as React.CSSProperties}
       />
 
       <span className="custom-player-time">{formatTime(safeDuration)}</span>
@@ -143,7 +144,7 @@ export default function CustomAudioPlayer({ src, onDownload }: CustomAudioPlayer
 
       <button
         type="button"
-        className="btn btn-outline-primary btn-icon"
+        className="btn-clean btn-icon"
         onClick={onDownload}
         disabled={!hasAudio}
         aria-label="Download audio"
