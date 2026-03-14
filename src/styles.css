@@ -1,10 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap");
 
 body {
   margin: 0;
   min-height: 100vh;
   background: #fff;
   padding-bottom: 96px;
+  font-family: "Poppins", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Syne", sans-serif;
 }
 
 html,
@@ -79,16 +90,16 @@ body::-webkit-scrollbar-thumb:hover,
   padding: 0;
 }
 
-.badge{
-    padding: 0.25em 0.5em;
-    font-size: 0.75em;
-    font-weight: 700;
+.badge {
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+  font-weight: normal;
 }
 
-.btn-sm{
-    padding: 0.35em 0.65em;
-    font-size: 0.75em;
-    font-weight: 700;
+.btn-sm {
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: normal;
 }
 
 
@@ -97,17 +108,6 @@ body::-webkit-scrollbar-thumb:hover,
 
 }
 
-
-.btn-primary {
-  --bs-btn-bg: #212121;
-  --bs-btn-border-color: #212121;
-  --bs-btn-hover-bg: #000000;
-  --bs-btn-hover-border-color: #000000;
-  --bs-btn-active-bg: #000000;
-  --bs-btn-active-border-color: #000000;
-  --bs-btn-disabled-bg: #616161;
-  --bs-btn-disabled-border-color: #616161;
-}
 
 .btn-outline-primary {
   --bs-btn-color: #212121;
@@ -138,10 +138,10 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .text-bg-primary {
-  color: #000000 !important;
-  background-color: #fff0 !important;
-  border: #000000 1px solid;
+  border: #212121 1px solid;
   border-radius: 999px;
+  color: #f7fbff !important;
+  background-color: #212121 !important;
 }
 
 .btn-danger {
@@ -158,7 +158,7 @@ body::-webkit-scrollbar-thumb:hover,
   border-radius: 999px;
 }
 
-.btn:disabled {
+.badge:disabled {
   color: #212121 !important;
   background-color: none;
   border: none;
@@ -183,15 +183,17 @@ audio {
 
 
 .text-bg-danger {
-  color: #313131 !important;
-  background-color: #fff0 !important;
+  color: #f7fbff !important;
+  background-color: #212121 !important;
   border-radius: 999px;
-  border: #313131 1px solid;
+  border: #212121 1px solid;
 
 }
 
 .btn-primary {
   border-radius: 999px;
+  background-color: #212121 !important;
+  border-color: #212121 !important;
 }
 
 
@@ -278,13 +280,27 @@ audio {
   gap: 0.4rem;
 }
 
+.tag-removable {
+  border-radius: 999px !important;
+  cursor: pointer;
+}
+
+.tag-removable::after {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.tag-removable:hover::after {
+  content: " ×";
+  opacity: 1;
+}
+
 .prompt-inline-input {
   appearance: none;
   border: 1px dashed #6c757d;
-  border-radius: 0.375rem;
+  border-radius: 999px;
   background: transparent;
   font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
   width: 90px;
   color: inherit;
   outline: none;
@@ -352,7 +368,8 @@ audio {
   border: 2px dashed #212121;
   border-radius: 8px;
   padding: 16px;
-  padding-bottom: 24px; /* 16px + 8px original */
+  padding-bottom: 24px;
+  /* 16px + 8px original */
   transition: all 0.2s ease;
 }
 
@@ -396,9 +413,9 @@ audio {
   color: #fff !important;
 }
 
-.remove-image-btn :hover{
-    border: none !important;
-    color: #525252 !important;
+.remove-image-btn :hover {
+  border: none !important;
+  color: #525252 !important;
 }
 
 .emotion-tag {
@@ -407,7 +424,7 @@ audio {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: 500;
+  font-weight: normal;
   font-size: 0.85rem;
   padding: 6px 10px;
   border-radius: 999px;
@@ -427,7 +444,7 @@ audio {
   background: rgba(12, 18, 34, 0.75);
   color: #fff;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: normal;
   display: inline-flex;
   align-items: center;
   gap: 4px;

@@ -824,7 +824,7 @@ export default function App() {
 
               <div className="card">
                 <div className="card-body">
-                  <h1 className="h1 text-uppercase text-primary mb-3">Visual rhythms</h1>
+                  <h1 className="h1 text-primary mb-3">Visual rhythms</h1>
                   <div className="row">
                     <div className="d-flex flex-wrap gap-2 justify-content-end">
 
@@ -984,9 +984,15 @@ export default function App() {
                   <p className="small mb-1 text-primary-emphasis">Positive</p>
                   <div className="floating-tags mb-2">
                     {musicPrompt.positiveGlobalStyles.map((tag) => (
-                      <span key={`global-positive-${tag}`} className="badge text-bg-primary">
+                      <button
+                        key={`global-positive-${tag}`}
+                        type="button"
+                        className="badge text-bg-primary tag-removable"
+                        onClick={() => selectedGenres.includes(tag) ? toggleGenre(tag) : removeCustomPositivePrompt(tag)}
+                        title="Remove"
+                      >
                         {tag}
-                      </span>
+                      </button>
                     ))}
                     <input
                       type="text"
@@ -1001,9 +1007,15 @@ export default function App() {
                   <p className="small mb-1 text-danger-emphasis">Negative</p>
                   <div className="floating-tags">
                     {musicPrompt.negativeGlobalStyles.map((tag) => (
-                      <span key={`global-negative-${tag}`} className="badge text-bg-danger">
+                      <button
+                        key={`global-negative-${tag}`}
+                        type="button"
+                        className="badge text-bg-danger  tag-removable"
+                        onClick={() => selectedNegativePrompts.includes(tag) ? toggleNegativePrompt(tag) : removeCustomNegativePrompt(tag)}
+                        title="Remove"
+                      >
                         {tag}
-                      </span>
+                      </button>
                     ))}
                     <input
                       type="text"
@@ -1026,7 +1038,7 @@ export default function App() {
                           <button
                             key={`${selectedItem.id}-pos-${tag}-${index}`}
                             type="button"
-                            className="badge text-bg-primary border-0"
+                            className="badge text-bg-primary  tag-removable"
                             onClick={() => removeLocalPositiveStyle(tag)}
                             title="Remove"
                           >
@@ -1049,7 +1061,7 @@ export default function App() {
                           <button
                             key={`${selectedItem.id}-neg-${tag}-${index}`}
                             type="button"
-                            className="badge text-bg-danger border-0"
+                            className="badge text-bg-danger  tag-removable"
                             onClick={() => removeLocalNegativeStyle(tag)}
                             title="Remove"
                           >
@@ -1083,7 +1095,7 @@ export default function App() {
                           <button
                             key={genre}
                             type="button"
-                            className={`btn btn-sm ${selectedGenres.includes(genre) ? "btn-primary" : "btn-outline-secondary"}`}
+                            className={`badge  btn-sm ${selectedGenres.includes(genre) ? "btn-primary tag-removable" : "btn-outline-secondary"}`}
                             onClick={() => toggleGenre(genre)}
                           >
                             {genre}
@@ -1093,7 +1105,7 @@ export default function App() {
                           <button
                             key={prompt}
                             type="button"
-                            className="btn btn-sm btn-primary"
+                            className="badge btn-sm btn-primary tag-removable"
                             onClick={() => removeCustomPositivePrompt(prompt)}
                             title="Remove custom positive prompt"
                           >
@@ -1125,7 +1137,7 @@ export default function App() {
                           <button
                             key={prompt}
                             type="button"
-                            className={`btn btn-sm ${selectedNegativePrompts.includes(prompt) ? "btn-danger" : "btn-outline-secondary"}`}
+                            className={`badge btn-sm ${selectedNegativePrompts.includes(prompt) ? "btn-danger tag-removable" : "btn-outline-secondary"}`}
                             onClick={() => toggleNegativePrompt(prompt)}
                           >
                             {prompt}
@@ -1135,7 +1147,7 @@ export default function App() {
                           <button
                             key={prompt}
                             type="button"
-                            className="btn btn-sm btn-danger"
+                            className="badge btn-sm btn-danger tag-removable"
                             onClick={() => removeCustomNegativePrompt(prompt)}
                             title="Remove custom negative prompt"
                           >
