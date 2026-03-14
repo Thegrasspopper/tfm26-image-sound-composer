@@ -278,12 +278,73 @@ audio {
   gap: 0.4rem;
 }
 
+.prompt-inline-input {
+  appearance: none;
+  border: 1px dashed #6c757d;
+  border-radius: 0.375rem;
+  background: transparent;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  width: 90px;
+  color: inherit;
+  outline: none;
+  transition: border-color 0.15s, width 0.2s;
+}
+
+.prompt-inline-input:focus {
+  border-color: var(--bs-primary);
+  border-style: solid;
+  width: 130px;
+}
+
+.prompt-inline-input--negative:focus {
+  border-color: var(--bs-danger);
+}
+
+.sequence-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .sequence {
   display: flex;
   gap: 14px;
-  overflow-x: auto;
+  overflow: hidden;
   align-items: flex-start;
   padding-bottom: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sequence-scroll-btn {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dee2e6;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  padding: 0;
+  color: #212121;
+  transition: background 0.15s;
+}
+
+.sequence-scroll-btn:hover {
+  background: #fff;
+  border-color: #212121;
+}
+
+.sequence-scroll-btn-left {
+  margin-right: 6px;
+}
+
+.sequence-scroll-btn-right {
+  margin-left: 6px;
 }
 
 .sequence.drag-over {
@@ -303,6 +364,7 @@ audio {
 }
 
 .image-card {
+  flex-shrink: 0;
   height: 180px;
   width: 320px;
   background: #fff;

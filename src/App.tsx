@@ -106,6 +106,8 @@ export default function App() {
   const [customNegativePrompts, setCustomNegativePrompts] = useState<string[]>([]);
   const [newPositivePrompt, setNewPositivePrompt] = useState<string>("");
   const [newNegativePrompt, setNewNegativePrompt] = useState<string>("");
+  const [newLocalPositivePrompt, setNewLocalPositivePrompt] = useState<string>("");
+  const [newLocalNegativePrompt, setNewLocalNegativePrompt] = useState<string>("");
   const [totalDurationSec, setTotalDurationSec] = useState<number>(120);
   const [generalPrompt, setGeneralPrompt] = useState<string>("");
   const [forceInstrumental, setForceInstrumental] = useState<boolean>(false);
@@ -114,6 +116,7 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
+  const sequenceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return () => {
@@ -385,6 +388,12 @@ export default function App() {
     setDurationEditingId(null);
   }
 
+  function scrollSequence(direction: "left" | "right") {
+    if (!sequenceRef.current) return;
+    const scrollAmount = 334; // card width (320) + gap (14)
+    sequenceRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+  }
+
   function moveItem(sourceId: string, targetId: string) {
     if (sourceId === targetId) {
       return;
@@ -568,6 +577,54 @@ export default function App() {
 
   function removeCustomNegativePrompt(prompt: string) {
     setCustomNegativePrompts((prev) => prev.filter((item) => item !== prompt));
+  }
+
+  function addLocalPositiveStyle() {
+    const value = newLocalPositivePrompt.trim();
+    if (!value || !selectedId) return;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === selectedId && !item.positiveLocalStyles.includes(value)
+          ? { ...item, positiveLocalStyles: [...item.positiveLocalStyles, value] }
+          : item
+      )
+    );
+    setNewLocalPositivePrompt("");
+  }
+
+  function removeLocalPositiveStyle(tag: string) {
+    if (!selectedId) return;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === selectedId
+          ? { ...item, positiveLocalStyles: item.positiveLocalStyles.filter((s) => s !== tag) }
+          : item
+      )
+    );
+  }
+
+  function addLocalNegativeStyle() {
+    const value = newLocalNegativePrompt.trim();
+    if (!value || !selectedId) return;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === selectedId && !item.negativeLocalStyles.includes(value)
+          ? { ...item, negativeLocalStyles: [...item.negativeLocalStyles, value] }
+          : item
+      )
+    );
+    setNewLocalNegativePrompt("");
+  }
+
+  function removeLocalNegativeStyle(tag: string) {
+    if (!selectedId) return;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === selectedId
+          ? { ...item, negativeLocalStyles: item.negativeLocalStyles.filter((s) => s !== tag) }
+          : item
+      )
+    );
   }
 
   async function getAudioDataUrl(blobUrl: string): Promise<string> {
@@ -768,7 +825,6 @@ export default function App() {
               <div className="card">
                 <div className="card-body">
                   <h1 className="h1 text-uppercase text-primary mb-3">Visual rhythms</h1>
-
                   <div className="row">
                     <div className="d-flex flex-wrap gap-2 justify-content-end">
 
@@ -810,7 +866,17 @@ export default function App() {
                     </div>
                   </div>
 
+                  <div className="sequence-wrapper">
+                    <button
+                      type="button"
+                      className="sequence-scroll-btn sequence-scroll-btn-left"
+                      onClick={() => scrollSequence("left")}
+                      aria-label="Scroll left"
+                    >
+                      <span className="material-symbols-outlined">chevron_left</span>
+                    </button>
                   <div
+                    ref={sequenceRef}
                     className={`sequence ${dragOverSequence ? 'drag-over' : ''}`}
                     onDragOver={onSequenceDragOver}
                     onDragLeave={onSequenceDragLeave}
@@ -896,6 +962,15 @@ export default function App() {
                       <span className="plus">+</span>
                     </article>
                   </div>
+                    <button
+                      type="button"
+                      className="sequence-scroll-btn sequence-scroll-btn-right"
+                      onClick={() => scrollSequence("right")}
+                      aria-label="Scroll right"
+                    >
+                      <span className="material-symbols-outlined">chevron_right</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
@@ -908,27 +983,37 @@ export default function App() {
                   <p className="small fw-semibold mb-2">General Prompt</p>
                   <p className="small mb-1 text-primary-emphasis">Positive</p>
                   <div className="floating-tags mb-2">
-                    {musicPrompt.positiveGlobalStyles.length ? (
-                      musicPrompt.positiveGlobalStyles.map((tag) => (
-                        <span key={`global-positive-${tag}`} className="badge text-bg-primary">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted small">No positive global styles yet.</span>
-                    )}
+                    {musicPrompt.positiveGlobalStyles.map((tag) => (
+                      <span key={`global-positive-${tag}`} className="badge text-bg-primary">
+                        {tag}
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      className="prompt-inline-input"
+                      value={newPositivePrompt}
+                      onChange={(e) => setNewPositivePrompt(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomPositivePrompt(); } }}
+                      onBlur={() => { if (newPositivePrompt.trim()) addCustomPositivePrompt(); }}
+                      placeholder="+ add prompt"
+                    />
                   </div>
                   <p className="small mb-1 text-danger-emphasis">Negative</p>
                   <div className="floating-tags">
-                    {musicPrompt.negativeGlobalStyles.length ? (
-                      musicPrompt.negativeGlobalStyles.map((tag) => (
-                        <span key={`global-negative-${tag}`} className="badge text-bg-danger">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted small">No negative global styles yet.</span>
-                    )}
+                    {musicPrompt.negativeGlobalStyles.map((tag) => (
+                      <span key={`global-negative-${tag}`} className="badge text-bg-danger">
+                        {tag}
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      className="prompt-inline-input prompt-inline-input--negative"
+                      value={newNegativePrompt}
+                      onChange={(e) => setNewNegativePrompt(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomNegativePrompt(); } }}
+                      onBlur={() => { if (newNegativePrompt.trim()) addCustomNegativePrompt(); }}
+                      placeholder="+ add prompt"
+                    />
                   </div>
                   <hr className="my-3" />
                   <p className="small fw-semibold mb-2">Selected Image</p>
@@ -937,27 +1022,49 @@ export default function App() {
                       <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
                       <p className="small mb-1 mt-2 text-primary-emphasis">Positive</p>
                       <div className="floating-tags mb-2">
-                        {selectedSection?.positiveLocalStyles.length ? (
-                          selectedSection.positiveLocalStyles.map((tag, index) => (
-                            <span key={`${selectedItem.id}-pos-${tag}-${index}`} className="badge text-bg-primary">
-                              {tag}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-muted small">No positive local styles for this image.</span>
-                        )}
+                        {selectedSection?.positiveLocalStyles.map((tag, index) => (
+                          <button
+                            key={`${selectedItem.id}-pos-${tag}-${index}`}
+                            type="button"
+                            className="badge text-bg-primary border-0"
+                            onClick={() => removeLocalPositiveStyle(tag)}
+                            title="Remove"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                        <input
+                          type="text"
+                          className="prompt-inline-input"
+                          value={newLocalPositivePrompt}
+                          onChange={(e) => setNewLocalPositivePrompt(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addLocalPositiveStyle(); } }}
+                          onBlur={() => { if (newLocalPositivePrompt.trim()) addLocalPositiveStyle(); }}
+                          placeholder="+ add prompt"
+                        />
                       </div>
                       <p className="small mb-1 text-danger-emphasis">Negative</p>
                       <div className="floating-tags">
-                        {selectedSection?.negativeLocalStyles.length ? (
-                          selectedSection.negativeLocalStyles.map((tag, index) => (
-                            <span key={`${selectedItem.id}-neg-${tag}-${index}`} className="badge text-bg-danger">
-                              {tag}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-muted small">No negative local styles for this image.</span>
-                        )}
+                        {selectedSection?.negativeLocalStyles.map((tag, index) => (
+                          <button
+                            key={`${selectedItem.id}-neg-${tag}-${index}`}
+                            type="button"
+                            className="badge text-bg-danger border-0"
+                            onClick={() => removeLocalNegativeStyle(tag)}
+                            title="Remove"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                        <input
+                          type="text"
+                          className="prompt-inline-input prompt-inline-input--negative"
+                          value={newLocalNegativePrompt}
+                          onChange={(e) => setNewLocalNegativePrompt(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addLocalNegativeStyle(); } }}
+                          onBlur={() => { if (newLocalNegativePrompt.trim()) addLocalNegativeStyle(); }}
+                          placeholder="+ add prompt"
+                        />
                       </div>
                     </div>
                   ) : (
@@ -982,15 +1089,20 @@ export default function App() {
                             {genre}
                           </button>
                         ))}
-                      </div>
-                      <label htmlFor="custom-positive-prompt" className="form-label fw-semibold mb-1">
-                        Add positive prompt
-                      </label>
-                      <div className="input-group input-group-sm mb-2">
+                        {customPositivePrompts.map((prompt) => (
+                          <button
+                            key={prompt}
+                            type="button"
+                            className="btn btn-sm btn-primary"
+                            onClick={() => removeCustomPositivePrompt(prompt)}
+                            title="Remove custom positive prompt"
+                          >
+                            {prompt}
+                          </button>
+                        ))}
                         <input
-                          id="custom-positive-prompt"
                           type="text"
-                          className="form-control"
+                          className="prompt-inline-input"
                           value={newPositivePrompt}
                           onChange={(event) => setNewPositivePrompt(event.target.value)}
                           onKeyDown={(event) => {
@@ -999,27 +1111,12 @@ export default function App() {
                               addCustomPositivePrompt();
                             }
                           }}
-                          placeholder="e.g. evolving strings"
+                          onBlur={() => {
+                            if (newPositivePrompt.trim()) addCustomPositivePrompt();
+                          }}
+                          placeholder="+ add prompt"
                         />
-                        <button type="button" className="btn btn-outline-primary" onClick={addCustomPositivePrompt}>
-                          Add
-                        </button>
                       </div>
-                      {customPositivePrompts.length > 0 && (
-                        <div className="genre-list mb-2">
-                          {customPositivePrompts.map((prompt) => (
-                            <button
-                              key={prompt}
-                              type="button"
-                              className="btn btn-sm btn-primary"
-                              onClick={() => removeCustomPositivePrompt(prompt)}
-                              title="Remove custom positive prompt"
-                            >
-                              {prompt}
-                            </button>
-                          ))}
-                        </div>
-                      )}
                     </div>
                     <div className="col-6">
                       <label className="form-label fw-semibold mb-2">Negative Prompts</label>
@@ -1034,15 +1131,20 @@ export default function App() {
                             {prompt}
                           </button>
                         ))}
-                      </div>
-                      <label htmlFor="custom-negative-prompt" className="form-label fw-semibold mb-1">
-                        Add negative prompt
-                      </label>
-                      <div className="input-group input-group-sm mb-2">
+                        {customNegativePrompts.map((prompt) => (
+                          <button
+                            key={prompt}
+                            type="button"
+                            className="btn btn-sm btn-danger"
+                            onClick={() => removeCustomNegativePrompt(prompt)}
+                            title="Remove custom negative prompt"
+                          >
+                            {prompt}
+                          </button>
+                        ))}
                         <input
-                          id="custom-negative-prompt"
                           type="text"
-                          className="form-control"
+                          className="prompt-inline-input prompt-inline-input--negative"
                           value={newNegativePrompt}
                           onChange={(event) => setNewNegativePrompt(event.target.value)}
                           onKeyDown={(event) => {
@@ -1051,27 +1153,12 @@ export default function App() {
                               addCustomNegativePrompt();
                             }
                           }}
-                          placeholder="e.g. heavy vocals"
+                          onBlur={() => {
+                            if (newNegativePrompt.trim()) addCustomNegativePrompt();
+                          }}
+                          placeholder="+ add prompt"
                         />
-                        <button type="button" className="btn btn-outline-danger" onClick={addCustomNegativePrompt}>
-                          Add
-                        </button>
                       </div>
-                      {customNegativePrompts.length > 0 && (
-                        <div className="genre-list mb-2">
-                          {customNegativePrompts.map((prompt) => (
-                            <button
-                              key={prompt}
-                              type="button"
-                              className="btn btn-sm btn-danger"
-                              onClick={() => removeCustomNegativePrompt(prompt)}
-                              title="Remove custom negative prompt"
-                            >
-                              {prompt}
-                            </button>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                   <input
