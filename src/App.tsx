@@ -457,7 +457,7 @@ export default function App() {
       const next = [...prev];
       const [moved] = next.splice(sourceIndex, 1);
       next.splice(targetIndex, 0, moved);
-      return next;
+      return next.map((item, i) => ({ ...item, sectionName: getSectionName(i + 1, next.length) }));
     });
   }
 
