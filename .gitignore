@@ -6,4 +6,4 @@ dist
 package-lock.json
 *.tsbuildinfo
 .env.local
-/.github
+
