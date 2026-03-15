@@ -6,6 +6,14 @@ body {
   min-height: 100vh;
   background: #fff;
   font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 h1{
@@ -882,6 +890,10 @@ audio {
   margin-top: 4px;
 }
 
+main.container-fluid {
+  flex: 1;
+}
+
 /* Footer */
 .app-footer {
   display: flex;
@@ -890,12 +902,13 @@ audio {
   gap: 16px;
   padding: 24px 32px;
   border-top: 1px solid #e8e8e8;
-  margin-top: 40px;
+  background-color: #212121;
 }
 
 .app-footer-logo-link {
   display: flex;
   align-items: center;
+  filter: invert(100%);
 }
 
 .app-footer-logo {

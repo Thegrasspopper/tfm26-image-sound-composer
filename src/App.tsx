@@ -898,7 +898,7 @@ export default function App() {
 
   return (
     <>
-      <main className="container-fluid py-3">
+      <main className="container-fluid pt-3">
         <div className="col">
           <div className="row g-3">
             <section className="offset-1 col-8">
@@ -962,121 +962,121 @@ export default function App() {
                     >
                       <span className="material-symbols-outlined">chevron_left</span>
                     </button>
-                  <div
-                    ref={sequenceRef}
-                    className={`sequence ${dragOverSequence ? 'drag-over' : ''}`}
-                    onDragOver={onSequenceDragOver}
-                    onDragLeave={onSequenceDragLeave}
-                    onDrop={onSequenceDrop}
-                  >
-                    {items.map((item) => (
-                      <article
-                        key={item.id}
-                        className={`image-card ${selectedId === item.id ? "selected" : ""}`}
-                        draggable
-                        onClick={() => setSelectedId(item.id)}
-                        onDragStart={() => setDraggingId(item.id)}
-                        onDragOver={(event) => event.preventDefault()}
-                        onDrop={() => {
-                          if (draggingId) {
-                            moveItem(draggingId, item.id);
-                          }
-                        }}
-                        onDragEnd={() => setDraggingId(null)}
-                      >
-                        <div className="image-frame">
-                          <button
-                            type="button"
-                            className="remove-image-btn btn btn-sm btn-danger"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              removeImage(item.id);
-                            }}
-                            aria-label={`Remove ${item.name}`}
-                            title="Remove image"
-                          >
-                            X
-                          </button>
-                          <img src={item.src} alt={item.name} />
-                          {labelEditingId === item.id ? (
-                            <input
-                              autoFocus
-                              className="emotion-tag emotion-tag-input"
-                              type="text"
-                              value={item.emotion}
-                              onChange={(event) => { event.stopPropagation(); onItemLabelChange(item.id, event.target.value); }}
-                              onBlur={() => setLabelEditingId(null)}
-                              onKeyDown={(event) => { if (event.key === "Enter" || event.key === "Escape") setLabelEditingId(null); }}
+                    <div
+                      ref={sequenceRef}
+                      className={`sequence ${dragOverSequence ? 'drag-over' : ''}`}
+                      onDragOver={onSequenceDragOver}
+                      onDragLeave={onSequenceDragLeave}
+                      onDrop={onSequenceDrop}
+                    >
+                      {items.map((item) => (
+                        <article
+                          key={item.id}
+                          className={`image-card ${selectedId === item.id ? "selected" : ""}`}
+                          draggable
+                          onClick={() => setSelectedId(item.id)}
+                          onDragStart={() => setDraggingId(item.id)}
+                          onDragOver={(event) => event.preventDefault()}
+                          onDrop={() => {
+                            if (draggingId) {
+                              moveItem(draggingId, item.id);
+                            }
+                          }}
+                          onDragEnd={() => setDraggingId(null)}
+                        >
+                          <div className="image-frame">
+                            <button
+                              type="button"
+                              className="remove-image-btn btn btn-sm btn-danger"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                removeImage(item.id);
+                              }}
+                              aria-label={`Remove ${item.name}`}
+                              title="Remove image"
+                            >
+                              X
+                            </button>
+                            <img src={item.src} alt={item.name} />
+                            {labelEditingId === item.id ? (
+                              <input
+                                autoFocus
+                                className="emotion-tag emotion-tag-input"
+                                type="text"
+                                value={item.emotion}
+                                onChange={(event) => { event.stopPropagation(); onItemLabelChange(item.id, event.target.value); }}
+                                onBlur={() => setLabelEditingId(null)}
+                                onKeyDown={(event) => { if (event.key === "Enter" || event.key === "Escape") setLabelEditingId(null); }}
+                                onClick={(event) => event.stopPropagation()}
+                                onMouseDown={(event) => event.stopPropagation()}
+                                aria-label={`Label for ${item.name}`}
+                              />
+                            ) : (
+                              <p
+                                className="emotion-tag"
+                                onClick={(event) => { event.stopPropagation(); if (!item.analyzing) setLabelEditingId(item.id); }}
+                                title="Click to edit label"
+                              >
+                                {item.analyzing ? "Analyzing..." : item.emotion}
+                              </p>
+                            )}
+
+                            <div
+                              className="duration-inline"
                               onClick={(event) => event.stopPropagation()}
                               onMouseDown={(event) => event.stopPropagation()}
-                              aria-label={`Label for ${item.name}`}
-                            />
-                          ) : (
-                            <p
-                              className="emotion-tag"
-                              onClick={(event) => { event.stopPropagation(); if (!item.analyzing) setLabelEditingId(item.id); }}
-                              title="Click to edit label"
+                              onDoubleClick={() => setDurationEditingId(item.id)}
+                              title="Double click to edit duration"
                             >
-                              {item.analyzing ? "Analyzing..." : item.emotion}
-                            </p>
-                          )}
-          
-                          <div
-                            className="duration-inline"
-                            onClick={(event) => event.stopPropagation()}
-                            onMouseDown={(event) => event.stopPropagation()}
-                            onDoubleClick={() => setDurationEditingId(item.id)}
-                            title="Double click to edit duration"
-                          >
-                            {durationEditingId === item.id ? (
-                              <>
-                                <span>s</span>
-                                <input
-                                  autoFocus
-                                  type="number"
-                                  min={1}
-                                  step={1}
-                                  value={item.durationSec ?? ""}
-                                  onChange={(event) => onItemDurationChange(item.id, event.target.value)}
-                                  onBlur={stopDurationEditing}
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Enter" || event.key === "Escape") {
-                                      stopDurationEditing();
-                                    }
-                                  }}
-                                  aria-label={`Duration for ${item.name}`}
-                                />
-                              </>
-                            ) : (
-                              <span className="duration-readout">{item.durationSec ?? 0}s</span>
+                              {durationEditingId === item.id ? (
+                                <>
+                                  <span>s</span>
+                                  <input
+                                    autoFocus
+                                    type="number"
+                                    min={1}
+                                    step={1}
+                                    value={item.durationSec ?? ""}
+                                    onChange={(event) => onItemDurationChange(item.id, event.target.value)}
+                                    onBlur={stopDurationEditing}
+                                    onKeyDown={(event) => {
+                                      if (event.key === "Enter" || event.key === "Escape") {
+                                        stopDurationEditing();
+                                      }
+                                    }}
+                                    aria-label={`Duration for ${item.name}`}
+                                  />
+                                </>
+                              ) : (
+                                <span className="duration-readout">{item.durationSec ?? 0}s</span>
+                              )}
+                            </div>
+                            {item.sectionName && (
+                              <p className="section-name-tag">
+                                {item.sectionName}
+                              </p>
                             )}
                           </div>
-                                                           {item.sectionName && (
-                            <p className="section-name-tag">
-                              {item.sectionName}
-                            </p>
-                          )}
-                        </div>
-                 
-                      </article>
-                    ))}
 
-                    <article
-                      className="image-card add-card"
-                      role="button"
-                      tabIndex={0}
-                      onClick={openFilePicker}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          openFilePicker();
-                        }
-                      }}
-                      aria-label="Add a new image"
-                    >
-                      <span className="plus">+</span>
-                    </article>
-                  </div>
+                        </article>
+                      ))}
+
+                      <article
+                        className="image-card add-card"
+                        role="button"
+                        tabIndex={0}
+                        onClick={openFilePicker}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            openFilePicker();
+                          }
+                        }}
+                        aria-label="Add a new image"
+                      >
+                        <span className="plus">+</span>
+                      </article>
+                    </div>
                     <button
                       type="button"
                       className="sequence-scroll-btn sequence-scroll-btn-right"
@@ -1145,9 +1145,9 @@ export default function App() {
 
                   {selectedItem ? (
                     <div className="selected-mini-card  mt-4">
-                      
-                  <h2 className="h6 fw-semibold mb-2 pt-8">Selected Image</h2>
-                  <hr className="my-3" />
+
+                      <h2 className="h6 fw-semibold mb-2 pt-8">Selected Image</h2>
+                      <hr className="my-3" />
                       <div className="selected-mini-card-top">
                         <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
                         <dl className="selected-mini-stats">
@@ -1209,8 +1209,8 @@ export default function App() {
                       </div>
                     </div>
                   ) : (
-                    <div> 
-                    <hr className="my-3" /><span className="text-muted small">Select an image to preview it here.</span>
+                    <div>
+                      <hr className="my-3" /><span className="text-muted small">Select an image to preview it here.</span>
                     </div>
                   )}
                 </div>
@@ -1218,7 +1218,7 @@ export default function App() {
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
                   <h2 className="h5 mb-3">Inspirational Tags</h2>
-                    <hr className="my-3" />
+                  <hr className="my-3" />
                   <div className="row">
                     <div className="col-12">
                       <p className="small mb-3 text-primary-emphasis">Positive styles:</p>
@@ -1347,10 +1347,14 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <a href="https://www.carolinasegura.design/" target="_blank" rel="noopener noreferrer" className="app-footer-logo-link">
-          <img src="https://www.carolinasegura.design/wp-content/uploads/2024/04/logo.gif" alt="Carolina Segura" className="app-footer-logo" />
-        </a>
-        <span className="app-footer-text">App by Carolina Segura · All rights reserved</span>
+        <div className="offset-1">
+          <a href="https://www.carolinasegura.design/" target="_blank" rel="noopener noreferrer" className="app-footer-logo-link">
+            <img src="https://www.carolinasegura.design/wp-content/uploads/2024/04/logo.gif" alt="Carolina Segura" className="app-footer-logo" />
+          </a>
+        </div>
+        <div className="col-8">
+          <span className="app-footer-text">App by Carolina Segura · All rights reserved</span>
+        </div>
       </footer>
 
       {showApiKeysModal && (
