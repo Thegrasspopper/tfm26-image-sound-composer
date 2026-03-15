@@ -35,9 +35,3 @@ A TypeScript + React app where users:
 
 - You can analyze images with Gemini or Claude Haiku 4.5 (select in UI), both returning VAD + style JSON.
 - ElevenLabs uses the official JS SDK music compose API with a section-based composition plan.
-
-
-
-I want to have a floating panel on the right side, with the general prompt as label tags. I also want to have the current selected image has a smaller image with the prompts also as labels
-
-Use material design google icons for icons

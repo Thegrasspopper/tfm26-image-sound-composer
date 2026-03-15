@@ -16,7 +16,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${String(secs).padStart(2, "0")}`;
 }
 
-export default function CustomAudioPlayer({ src, onDownload,openAudioPicker }: CustomAudioPlayerProps) {
+export default function CustomAudioPlayer({ src, onDownload, openAudioPicker }: CustomAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -156,7 +156,7 @@ export default function CustomAudioPlayer({ src, onDownload,openAudioPicker }: C
         </span>
       </button>
 
-      <button
+{/*       <button
         type="button"
         className="btn-clean btn-icon"
         onClick={openAudioPicker}
@@ -164,7 +164,7 @@ export default function CustomAudioPlayer({ src, onDownload,openAudioPicker }: C
         title="Import audio"
       >
         <span className="material-symbols-outlined" aria-hidden="true">upload</span>
-      </button>
-</div>
+      </button> */}
+    </div>
   );
 }

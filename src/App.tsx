@@ -1102,13 +1102,14 @@ export default function App() {
                   <hr className="my-3" />
                   <p className="small mb-3 text-primary-emphasis">Positive tags:</p>
                   <div className="floating-tags mb-2">
-                    {musicPrompt.positiveGlobalStyles.map((tag) => (
+                    {musicPrompt.positiveGlobalStyles.map((tag, index) => (
                       <button
                         key={`global-positive-${tag}`}
                         type="button"
-                        className="badge text-bg-primary tag-removable"
-                        onClick={() => selectedGenres.includes(tag) ? toggleGenre(tag) : removeCustomPositivePrompt(tag)}
-                        title="Remove"
+                        className={`badge text-bg-primary${index === 0 ? "" : " tag-removable"}`}
+                        onClick={() => index === 0 ? undefined : selectedGenres.includes(tag) ? toggleGenre(tag) : removeCustomPositivePrompt(tag)}
+                        title={index === 0 ? undefined : "Remove"}
+                        style={index === 0 ? { cursor: "default" } : undefined}
                       >
                         {tag}
                       </button>
