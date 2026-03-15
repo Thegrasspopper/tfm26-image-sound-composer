@@ -879,6 +879,10 @@ export default function App() {
       const url = await sendPromptToElevenLabs(musicPrompt, { forceInstrumental }, elevenLabsApiKey || undefined);
       setAudioUrl(url);
       setStatus("Audio generated successfully.");
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `image-sound-composer-${new Date().toISOString().replace(/[:.]/g, "-")}.mp3`;
+      anchor.click();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Failed to send prompt to ElevenLabs");
     }
