@@ -1371,7 +1371,7 @@ export default function App() {
                 placeholder="sk-ant-..."
                 value={draftClaudeKey}
                 onChange={(e) => setDraftClaudeKey(e.target.value)}
-                autoComplete="off"
+                autoComplete="new-password"
               />
             </label>
             <label className="api-keys-label">
@@ -1382,7 +1382,7 @@ export default function App() {
                 placeholder="sk_..."
                 value={draftElevenLabsKey}
                 onChange={(e) => setDraftElevenLabsKey(e.target.value)}
-                autoComplete="off"
+                autoComplete="new-password"
               />
             </label>
             <div className="api-keys-modal-actions">
