@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 type CustomAudioPlayerProps = {
   src?: string;
   onDownload: () => void;
+  openAudioPicker: () => void;
 };
 
 function formatTime(seconds: number): string {
@@ -15,7 +16,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${String(secs).padStart(2, "0")}`;
 }
 
-export default function CustomAudioPlayer({ src, onDownload }: CustomAudioPlayerProps) {
+export default function CustomAudioPlayer({ src, onDownload,openAudioPicker }: CustomAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -94,7 +95,7 @@ export default function CustomAudioPlayer({ src, onDownload }: CustomAudioPlayer
   }
 
   return (
-    <div className="custom-player">
+    <div className="custom-player padding-right">
       <audio ref={audioRef} src={src} preload="metadata" />
       <button
         type="button"
@@ -154,6 +155,16 @@ export default function CustomAudioPlayer({ src, onDownload }: CustomAudioPlayer
           download
         </span>
       </button>
-    </div>
+
+      <button
+        type="button"
+        className="btn-clean btn-icon"
+        onClick={openAudioPicker}
+        aria-label="Import audio"
+        title="Import audio"
+      >
+        <span className="material-symbols-outlined" aria-hidden="true">upload</span>
+      </button>
+</div>
   );
 }

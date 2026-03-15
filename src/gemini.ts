@@ -11,6 +11,7 @@ export type EmotionResult = {
   sceneMood: string;
   positiveLocalStyles: string[];
   negativeLocalStyles: string[];
+  sectionName: string;
 };
 
 export type AnalyzeContext = {

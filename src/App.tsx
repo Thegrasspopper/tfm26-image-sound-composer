@@ -17,6 +17,14 @@ type ImageItem = {
   positiveLocalStyles: string[];
   negativeLocalStyles: string[];
   analyzing: boolean;
+  valence?: number;
+  arousal?: number;
+  dominance?: number;
+  brightness?: number;
+  motion?: number;
+  palette?: string;
+  texture?: string;
+  sectionName?: string;
 };
 
 type AnalysisContext = {
@@ -47,6 +55,14 @@ type ExportFile = {
     durationSec?: number;
     positiveLocalStyles: string[];
     negativeLocalStyles: string[];
+    valence?: number;
+    arousal?: number;
+    dominance?: number;
+    brightness?: number;
+    motion?: number;
+    palette?: string;
+    texture?: string;
+    sectionName?: string;
   }>;
 };
 
@@ -93,6 +109,7 @@ export default function App() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverSequence, setDragOverSequence] = useState<boolean>(false);
   const [durationEditingId, setDurationEditingId] = useState<string | null>(null);
+  const [labelEditingId, setLabelEditingId] = useState<string | null>(null);
   const [aiProvider, setAiProvider] = useState<AIProvider>("claude");
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["cinematic"]);
   const [selectedNegativePrompts, setSelectedNegativePrompts] = useState<string[]>([
@@ -242,6 +259,7 @@ export default function App() {
     if (!fileList?.length) {
       return;
     }
+    setStatus("Loading iamge(s)...");
 
     const files = Array.from(fileList);
     const newItems: ImageItem[] = [];
@@ -275,6 +293,7 @@ export default function App() {
         const { base64Data, mimeType } = splitDataUrl(item.src);
         const sectionIndex = items.length + offset + 1;
         const sectionName = getSectionName(sectionIndex, totalAfterUpload);
+        setStatus("Sending to analyse...");
 
         const result = await analyzeImageWithProvider(base64Data, mimeType, {
           sectionName,
@@ -285,14 +304,22 @@ export default function App() {
         const previousItem = workingItems[items.length + offset - 1];
         const diversified = applySimilarityDiversification(result, previousItem);
         const mood = result.sceneMood?.trim() || "Unknown";
-
+        setStatus("Image analysed");
         workingItems[items.length + offset] = {
           ...workingItems[items.length + offset],
           emotion: mood,
           positiveLocalStyles: diversified.positiveLocalStyles,
           negativeLocalStyles: diversified.negativeLocalStyles,
           prompt: diversified.prompt,
-          analyzing: false
+          analyzing: false,
+          valence: result.valence,
+          arousal: result.arousal,
+          dominance: result.dominance,
+          brightness: result.brightness,
+          motion: result.motion,
+          palette: result.palette,
+          texture: result.texture,
+          sectionName
         };
 
         setItems((prev) =>
@@ -304,7 +331,15 @@ export default function App() {
                 positiveLocalStyles: diversified.positiveLocalStyles,
                 negativeLocalStyles: diversified.negativeLocalStyles,
                 prompt: diversified.prompt,
-                analyzing: false
+                analyzing: false,
+                valence: result.valence,
+                arousal: result.arousal,
+                dominance: result.dominance,
+                brightness: result.brightness,
+                motion: result.motion,
+                palette: result.palette,
+                texture: result.texture,
+                sectionName
               }
               : current
           )
@@ -324,6 +359,8 @@ export default function App() {
         setStatus(error instanceof Error ? error.message : "Gemini analysis failed");
       }
     }
+    setStatus("Done");
+
   }
 
   function onPromptChange(value: string) {
@@ -386,6 +423,12 @@ export default function App() {
 
   function stopDurationEditing() {
     setDurationEditingId(null);
+  }
+
+  function onItemLabelChange(itemId: string, value: string) {
+    setItems((prev) =>
+      prev.map((item) => item.id === itemId ? { ...item, emotion: value } : item)
+    );
   }
 
   function scrollSequence(direction: "left" | "right") {
@@ -490,8 +533,9 @@ export default function App() {
       try {
         const { base64Data, mimeType } = splitDataUrl(item.src);
         const sectionIndex = index + 1;
+        const sectionName = getSectionName(sectionIndex, totalSections);
         const result = await analyzeImageWithProvider(base64Data, mimeType, {
-          sectionName: getSectionName(sectionIndex, totalSections),
+          sectionName,
           sectionIndex,
           totalSections,
           selectedGenres
@@ -506,7 +550,15 @@ export default function App() {
           positiveLocalStyles: diversified.positiveLocalStyles,
           negativeLocalStyles: diversified.negativeLocalStyles,
           prompt: diversified.prompt,
-          analyzing: false
+          analyzing: false,
+          valence: result.valence,
+          arousal: result.arousal,
+          dominance: result.dominance,
+          brightness: result.brightness,
+          motion: result.motion,
+          palette: result.palette,
+          texture: result.texture,
+          sectionName
         };
 
         setItems((prev) =>
@@ -518,7 +570,15 @@ export default function App() {
                 positiveLocalStyles: diversified.positiveLocalStyles,
                 negativeLocalStyles: diversified.negativeLocalStyles,
                 prompt: diversified.prompt,
-                analyzing: false
+                analyzing: false,
+                valence: result.valence,
+                arousal: result.arousal,
+                dominance: result.dominance,
+                brightness: result.brightness,
+                motion: result.motion,
+                palette: result.palette,
+                texture: result.texture,
+                sectionName
               }
               : current
           )
@@ -663,7 +723,15 @@ export default function App() {
         prompt: item.prompt,
         durationSec: item.durationSec,
         positiveLocalStyles: item.positiveLocalStyles,
-        negativeLocalStyles: item.negativeLocalStyles
+        negativeLocalStyles: item.negativeLocalStyles,
+        valence: item.valence,
+        arousal: item.arousal,
+        dominance: item.dominance,
+        brightness: item.brightness,
+        motion: item.motion,
+        palette: item.palette,
+        texture: item.texture,
+        sectionName: item.sectionName
       }))
     };
 
@@ -709,7 +777,7 @@ export default function App() {
 
       const importedItems: ImageItem[] = parsed.items
         .filter((item): item is NonNullable<ExportFile["items"][number]> => Boolean(item))
-        .map((item) => ({
+        .map((item, index) => ({
           id: typeof item.id === "string" ? item.id : `imported-${generateId()}`,
           src: typeof item.src === "string" ? item.src : "",
           name: typeof item.name === "string" ? item.name : "Imported image",
@@ -725,7 +793,15 @@ export default function App() {
           negativeLocalStyles: Array.isArray(item.negativeLocalStyles)
             ? item.negativeLocalStyles.filter((value): value is string => typeof value === "string")
             : [],
-          analyzing: false
+          analyzing: false,
+          valence: typeof item.valence === "number" ? item.valence : undefined,
+          arousal: typeof item.arousal === "number" ? item.arousal : undefined,
+          dominance: typeof item.dominance === "number" ? item.dominance : undefined,
+          brightness: typeof item.brightness === "number" ? item.brightness : undefined,
+          motion: typeof item.motion === "number" ? item.motion : undefined,
+          palette: typeof item.palette === "string" ? item.palette : undefined,
+          texture: typeof item.texture === "string" ? item.texture : undefined,
+          sectionName: getSectionName(index + 1, parsed.items.length)
         }))
         .filter((item) => item.src.startsWith("data:image/"));
 
@@ -825,8 +901,10 @@ export default function App() {
               <div className="card">
                 <div className="card-body">
                   <h1 className="h1 text-primary mb-3">Visual rhythms</h1>
-                  <div className="row">
-                    <div className="d-flex flex-wrap gap-2 justify-content-end">
+                  {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
+
+                  <div className="row mt-5">
+                    <div className="d-flex flex-wrap gap-2 justify-content-end padding-right">
 
                       <button
                         className="btn btn-clean btn-icon"
@@ -846,27 +924,19 @@ export default function App() {
                       </button>
                       <button
                         className="btn btn-clean btn-icon"
-                        onClick={openAudioPicker}
-                        aria-label="Import audio"
-                        title="Import audio"
-                      >
-                        <span className="material-symbols-outlined" aria-hidden="true">library_music</span>
-                      </button>
-                      <button
-                        className="btn btn-clean btn-icon"
                         onClick={onRegeneratePrompts}
                         aria-label="Re analyze images"
                         title="Re analyze images"
                       >
                         <span className="material-symbols-outlined" aria-hidden="true">refresh</span>
                       </button>
-                      <button className="btn btn-primary" onClick={onSendPrompt}>
+                      <button className="btn btn-primary btn-generate" onClick={onSendPrompt}>
                         Generate
                       </button>
                     </div>
                   </div>
 
-                  <div className="sequence-wrapper">
+                  <div className="sequence-wrapper mb-5">
                     <button
                       type="button"
                       className="sequence-scroll-btn sequence-scroll-btn-left"
@@ -911,7 +981,29 @@ export default function App() {
                             X
                           </button>
                           <img src={item.src} alt={item.name} />
-                          <p className="emotion-tag">{item.analyzing ? "Analyzing..." : item.emotion}</p>
+                          {labelEditingId === item.id ? (
+                            <input
+                              autoFocus
+                              className="emotion-tag emotion-tag-input"
+                              type="text"
+                              value={item.emotion}
+                              onChange={(event) => { event.stopPropagation(); onItemLabelChange(item.id, event.target.value); }}
+                              onBlur={() => setLabelEditingId(null)}
+                              onKeyDown={(event) => { if (event.key === "Enter" || event.key === "Escape") setLabelEditingId(null); }}
+                              onClick={(event) => event.stopPropagation()}
+                              onMouseDown={(event) => event.stopPropagation()}
+                              aria-label={`Label for ${item.name}`}
+                            />
+                          ) : (
+                            <p
+                              className="emotion-tag"
+                              onClick={(event) => { event.stopPropagation(); if (!item.analyzing) setLabelEditingId(item.id); }}
+                              title="Click to edit label"
+                            >
+                              {item.analyzing ? "Analyzing..." : item.emotion}
+                            </p>
+                          )}
+          
                           <div
                             className="duration-inline"
                             onClick={(event) => event.stopPropagation()}
@@ -942,7 +1034,13 @@ export default function App() {
                               <span className="duration-readout">{item.durationSec ?? 0}s</span>
                             )}
                           </div>
+                                                           {item.sectionName && (
+                            <p className="section-name-tag">
+                              {item.sectionName}
+                            </p>
+                          )}
                         </div>
+                 
                       </article>
                     ))}
 
@@ -973,7 +1071,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
-              <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} />
+              <CustomAudioPlayer src={audioUrl || undefined} onDownload={onDownloadAudio} openAudioPicker={openAudioPicker} />
             </section>
 
             <section className="col-3">
@@ -981,8 +1079,7 @@ export default function App() {
                 <div className="card-body">
                   <h2 className="h6 text-uppercase text-primary mb-3">Tags</h2>
                   <hr className="my-3" />
-                  <p className="small fw-semibold mb-2">General Prompt</p>
-                  <p className="small mb-1 text-primary-emphasis">Positive</p>
+                  <p className="small mb-3 text-primary-emphasis">Positive tags:</p>
                   <div className="floating-tags mb-2">
                     {musicPrompt.positiveGlobalStyles.map((tag) => (
                       <button
@@ -1005,7 +1102,7 @@ export default function App() {
                       placeholder="+ add prompt"
                     />
                   </div>
-                  <p className="small mb-1 text-danger-emphasis">Negative</p>
+                  <p className="small mb-3 mt-4 text-primary-emphasis">Negative tags:</p>
                   <div className="floating-tags">
                     {musicPrompt.negativeGlobalStyles.map((tag) => (
                       <button
@@ -1030,11 +1127,23 @@ export default function App() {
                   </div>
 
                   {selectedItem ? (
-                    <div className="selected-mini-card">
+                    <div className="selected-mini-card  mt-5">
                       
                   <h2 className="h6 fw-semibold mb-2 pt-10">Selected Image</h2>
                   <hr className="my-3" />
-                      <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
+                      <div className="selected-mini-card-top">
+                        <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />
+                        <dl className="selected-mini-stats">
+                          {selectedItem.valence !== undefined && <><dt>Valence</dt><dd>{selectedItem.valence.toFixed(2)}</dd></>}
+                          {selectedItem.arousal !== undefined && <><dt>Arousal</dt><dd>{selectedItem.arousal.toFixed(2)}</dd></>}
+                          {selectedItem.dominance !== undefined && <><dt>Dominance</dt><dd>{selectedItem.dominance.toFixed(2)}</dd></>}
+                          {selectedItem.brightness !== undefined && <><dt>Brightness</dt><dd>{selectedItem.brightness.toFixed(2)}</dd></>}
+                          {selectedItem.motion !== undefined && <><dt>Motion</dt><dd>{selectedItem.motion.toFixed(2)}</dd></>}
+                          {selectedItem.palette && <><dt>Palette</dt><dd>{selectedItem.palette}</dd></>}
+                          {selectedItem.texture && <><dt>Texture</dt><dd>{selectedItem.texture}</dd></>}
+                          {selectedItem.emotion && <><dt>Mood</dt><dd>{selectedItem.emotion}</dd></>}
+                        </dl>
+                      </div>
                       <p className="small mb-1 mt-2 text-primary-emphasis">Positive</p>
                       <div className="floating-tags mb-2">
                         {selectedSection?.positiveLocalStyles.map((tag, index) => (
@@ -1095,7 +1204,7 @@ export default function App() {
                     <hr className="my-3" />
                   <div className="row">
                     <div className="col-12">
-                      <label className="form-label fw-semibold mb-2">Positive Global Styles</label>
+                      <p className="small mb-3 text-primary-emphasis">Positive styles:</p>
                       <div className="genre-list mb-2">
                         {GENRE_OPTIONS.map((genre) => (
                           <button
@@ -1137,7 +1246,7 @@ export default function App() {
                       </div>
                     </div>
                     <div className="col-12">
-                      <label className="form-label fw-semibold mb-2">Negative Prompts</label>
+                      <p className="small  mb-3 mt-4 text-primary-emphasis">Negative prompts:</p>
                       <div className="genre-list mb-2">
                         {NEGATIVE_PROMPT_OPTIONS.map((prompt) => (
                           <button
@@ -1216,14 +1325,6 @@ export default function App() {
                 </div>
               </div>
             </section>
-
-            <section className="col-8">
-              <div className="row">
-                {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
-                Total {totalDurationSec} seconds
-              </div>
-            </section>
-
           </div>
         </div>
       </main>

@@ -51,15 +51,16 @@ const ANALYSIS_TOOL_SCHEMA = {
     positiveLocalStyles: {
       type: "array",
       items: { type: "string" },
-      minItems: 3,
-      maxItems: 6
+      minItems: 1,
+      maxItems: 2
     },
     negativeLocalStyles: {
       type: "array",
       items: { type: "string" },
       minItems: 1,
-      maxItems: 4
-    }
+      maxItems: 2
+    },
+    sectionName : { type: "string", description: "Name of the song section (e.g. verse, chorus)" },
   },
   required: [
     "valence",
@@ -71,7 +72,8 @@ const ANALYSIS_TOOL_SCHEMA = {
     "texture",
     "sceneMood",
     "positiveLocalStyles",
-    "negativeLocalStyles"
+    "negativeLocalStyles",
+    "sectionName"
   ],
   additionalProperties: false
 } as const;
@@ -91,7 +93,8 @@ function isEmotionResult(value: unknown): value is EmotionResult {
     typeof data.texture === "string" &&
     typeof data.sceneMood === "string" &&
     Array.isArray(data.positiveLocalStyles) &&
-    Array.isArray(data.negativeLocalStyles)
+    Array.isArray(data.negativeLocalStyles) &&
+    typeof data.sectionName === "string"
   );
 }
 
