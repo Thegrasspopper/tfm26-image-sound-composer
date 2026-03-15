@@ -909,7 +909,7 @@ export default function App() {
 
               <div className="card">
                 <div className="card-body">
-                  <h1 className="h1 text-primary mb-3">Visual rhythms</h1>
+                  <h1 className="h1 text-primary mb-3">See sound</h1>
                   {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
 
                   <div className="row mt-5">
