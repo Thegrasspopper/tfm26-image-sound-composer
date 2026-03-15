@@ -1144,9 +1144,9 @@ export default function App() {
                   </div>
 
                   {selectedItem ? (
-                    <div className="selected-mini-card  mt-5">
+                    <div className="selected-mini-card  mt-4">
                       
-                  <h2 className="h6 fw-semibold mb-2 pt-10">Selected Image</h2>
+                  <h2 className="h6 fw-semibold mb-2 pt-8">Selected Image</h2>
                   <hr className="my-3" />
                       <div className="selected-mini-card-top">
                         <img src={selectedItem.src} alt={selectedItem.name} className="selected-mini-image" />

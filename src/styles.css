@@ -5,7 +5,6 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #fff;
-  padding-bottom: 96px;
   font-family: "Poppins", sans-serif;
 }
 
@@ -220,11 +219,10 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .btn-danger {
-  color: #212121 !important;
-  background-color: #fff0 !important;
-  border: #000000 1px solid;
+  color: #f7fbff !important;
+  background-color: #212121 !important;
+  border: #212121 1px solid;
   border-radius: 999px;
-
 }
 
 .btn-danger:hover {
