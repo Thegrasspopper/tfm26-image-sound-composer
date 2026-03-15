@@ -1346,6 +1346,13 @@ export default function App() {
         </div>
       </main>
 
+      <footer className="app-footer">
+        <a href="https://www.carolinasegura.design/" target="_blank" rel="noopener noreferrer" className="app-footer-logo-link">
+          <img src="https://www.carolinasegura.design/wp-content/uploads/2024/04/logo.gif" alt="Carolina Segura" className="app-footer-logo" />
+        </a>
+        <span className="app-footer-text">App by Carolina Segura · All rights reserved</span>
+      </footer>
+
       {showApiKeysModal && (
         <div className="api-keys-overlay" onClick={() => setShowApiKeysModal(false)}>
           <div className="api-keys-modal" onClick={(e) => e.stopPropagation()}>

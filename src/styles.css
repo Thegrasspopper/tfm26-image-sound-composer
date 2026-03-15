@@ -881,3 +881,29 @@ audio {
   gap: 10px;
   margin-top: 4px;
 }
+
+/* Footer */
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 16px;
+  padding: 24px 32px;
+  border-top: 1px solid #e8e8e8;
+  margin-top: 40px;
+}
+
+.app-footer-logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.app-footer-logo {
+  height: 36px;
+  width: auto;
+}
+
+.app-footer-text {
+  font-size: 0.8rem;
+  color: #888;
+}
