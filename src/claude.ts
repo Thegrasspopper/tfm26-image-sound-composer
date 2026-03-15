@@ -152,7 +152,8 @@ export async function analyzeImageEmotionWithClaude(
   });
 
   const toolUse = message.content.find(
-    (part) => part.type === "tool_use" && part.name === ANALYSIS_TOOL_NAME
+    (part): part is Anthropic.ToolUseBlock =>
+      part.type === "tool_use" && (part as Anthropic.ToolUseBlock).name === ANALYSIS_TOOL_NAME
   );
   if (!toolUse || !isEmotionResult(toolUse.input)) {
     throw new Error("Claude analysis failed. Tool output missing or invalid.");

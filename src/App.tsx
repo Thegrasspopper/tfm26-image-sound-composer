@@ -1222,7 +1222,7 @@ export default function App() {
               </div>
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
-                  <h2 className="h5 mb-3">Inspirational Tags</h2>
+                  <h2 className="h6 text-uppercase text-primary mb-3">Inspirational Tags</h2>
                   <hr className="my-3" />
                   <div className="row">
                     <div className="col-12">
