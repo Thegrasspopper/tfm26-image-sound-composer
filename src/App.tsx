@@ -1077,7 +1077,7 @@ export default function App() {
             <section className="col-3">
               <div className="card shadow-sm border-primary-subtle">
                 <div className="card-body">
-                  <h2 className="h6 text-uppercase text-primary mb-3">Tags</h2>
+                  <h2 className="h6 text-uppercase text-primary mb-3">Track</h2>
                   <hr className="my-3" />
                   <p className="small mb-3 text-primary-emphasis">Positive tags:</p>
                   <div className="floating-tags mb-2">

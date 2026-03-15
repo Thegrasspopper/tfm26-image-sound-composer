@@ -34,6 +34,7 @@ Use the provided tool to return the structured result.
 ${sectionContextLine}
 Selected genres and style details:
 ${selectedGenreDetails || "- none provided"}
+Make sure the negative prompts don't conflict with the positive prompts,
 No markdown. No explanation.`;
 }
 
