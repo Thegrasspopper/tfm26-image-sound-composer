@@ -102,14 +102,16 @@ function isEmotionResult(value: unknown): value is EmotionResult {
 export async function analyzeImageEmotionWithClaude(
   base64Image: string,
   mimeType: string = "image/jpeg",
-  context?: AnalyzeContext
+  context?: AnalyzeContext,
+  apiKey?: string
 ): Promise<EmotionResult> {
-  if (!CLAUDE_API_KEY) {
+  const key = apiKey || CLAUDE_API_KEY;
+  if (!key) {
     throw new Error("Missing Claude API key");
   }
 
   const anthropic = new Anthropic({
-    apiKey: CLAUDE_API_KEY,
+    apiKey: key,
     dangerouslyAllowBrowser: true
   });
 

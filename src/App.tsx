@@ -130,6 +130,11 @@ export default function App() {
   const [forceInstrumental, setForceInstrumental] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
   const [audioUrl, setAudioUrl] = useState<string>("");
+  const [showApiKeysModal, setShowApiKeysModal] = useState<boolean>(false);
+  const [claudeApiKey, setClaudeApiKey] = useState<string>(() => localStorage.getItem("user_claude_api_key") ?? "");
+  const [elevenLabsApiKey, setElevenLabsApiKey] = useState<string>(() => localStorage.getItem("user_elevenlabs_api_key") ?? "");
+  const [draftClaudeKey, setDraftClaudeKey] = useState<string>("");
+  const [draftElevenLabsKey, setDraftElevenLabsKey] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -194,7 +199,7 @@ export default function App() {
     context: AnalysisContext
   ): Promise<EmotionResult> {
     if (aiProvider === "claude") {
-      return analyzeImageEmotionWithClaude(base64Data, mimeType, context);
+      return analyzeImageEmotionWithClaude(base64Data, mimeType, context, claudeApiKey || undefined);
     }
     return analyzeImageEmotion(base64Data, mimeType, context);
   }
@@ -871,7 +876,7 @@ export default function App() {
       if (audioUrl) {
         revokeAudioUrl(audioUrl);
       }
-      const url = await sendPromptToElevenLabs(musicPrompt, { forceInstrumental });
+      const url = await sendPromptToElevenLabs(musicPrompt, { forceInstrumental }, elevenLabsApiKey || undefined);
       setAudioUrl(url);
       setStatus("Audio generated successfully.");
     } catch (error) {
@@ -906,6 +911,18 @@ export default function App() {
                   <div className="row mt-5">
                     <div className="d-flex flex-wrap gap-2 justify-content-end padding-right">
 
+                      <button
+                        className="btn btn-clean btn-icon"
+                        onClick={() => {
+                          setDraftClaudeKey(claudeApiKey);
+                          setDraftElevenLabsKey(elevenLabsApiKey);
+                          setShowApiKeysModal(true);
+                        }}
+                        aria-label="API keys"
+                        title="API keys"
+                      >
+                        <span className="material-symbols-outlined" aria-hidden="true">key_vertical</span>
+                      </button>
                       <button
                         className="btn btn-clean btn-icon"
                         onClick={onExportComposition}
@@ -1328,6 +1345,87 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {showApiKeysModal && (
+        <div className="api-keys-overlay" onClick={() => setShowApiKeysModal(false)}>
+          <div className="api-keys-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="api-keys-modal-header">
+              <h2 className="api-keys-modal-title">API Keys</h2>
+              <button
+                type="button"
+                className="btn-clean btn-icon"
+                onClick={() => setShowApiKeysModal(false)}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <p className="api-keys-modal-hint">
+              Leave blank to use the keys configured in <code>.env</code>.
+            </p>
+            <label className="api-keys-label">
+              Claude API Key
+              <input
+                type="password"
+                className="api-keys-input"
+                placeholder="sk-ant-..."
+                value={draftClaudeKey}
+                onChange={(e) => setDraftClaudeKey(e.target.value)}
+                autoComplete="off"
+              />
+            </label>
+            <label className="api-keys-label">
+              ElevenLabs API Key
+              <input
+                type="password"
+                className="api-keys-input"
+                placeholder="sk_..."
+                value={draftElevenLabsKey}
+                onChange={(e) => setDraftElevenLabsKey(e.target.value)}
+                autoComplete="off"
+              />
+            </label>
+            <div className="api-keys-modal-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setDraftClaudeKey("");
+                  setDraftElevenLabsKey("");
+                  setClaudeApiKey("");
+                  setElevenLabsApiKey("");
+                  localStorage.removeItem("user_claude_api_key");
+                  localStorage.removeItem("user_elevenlabs_api_key");
+                  setShowApiKeysModal(false);
+                }}
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  setClaudeApiKey(draftClaudeKey);
+                  setElevenLabsApiKey(draftElevenLabsKey);
+                  if (draftClaudeKey) {
+                    localStorage.setItem("user_claude_api_key", draftClaudeKey);
+                  } else {
+                    localStorage.removeItem("user_claude_api_key");
+                  }
+                  if (draftElevenLabsKey) {
+                    localStorage.setItem("user_elevenlabs_api_key", draftElevenLabsKey);
+                  } else {
+                    localStorage.removeItem("user_elevenlabs_api_key");
+                  }
+                  setShowApiKeysModal(false);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

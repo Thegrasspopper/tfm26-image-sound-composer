@@ -9,14 +9,16 @@ type ElevenLabsMusicOptions = {
 
 export async function sendPromptToElevenLabs(
   payload: ElevenLabsMusicPrompt,
-  options?: ElevenLabsMusicOptions
+  options?: ElevenLabsMusicOptions,
+  apiKey?: string
 ): Promise<string> {
-  if (!ELEVENLABS_API_KEY) {
+  const key = apiKey || ELEVENLABS_API_KEY;
+  if (!key) {
     throw new Error("Missing ElevenLabs API key");
   }
 
   const client = new ElevenLabsClient({
-    apiKey: ELEVENLABS_API_KEY
+    apiKey: key
   });
 
   const audioStream = await client.music.compose({
@@ -38,13 +40,14 @@ export type ElevenLabsBalance = {
   remaining: number;
 };
 
-export async function getElevenLabsCharacterBalance(): Promise<ElevenLabsBalance> {
-  if (!ELEVENLABS_API_KEY) {
+export async function getElevenLabsCharacterBalance(apiKey?: string): Promise<ElevenLabsBalance> {
+  const key = apiKey || ELEVENLABS_API_KEY;
+  if (!key) {
     throw new Error("Missing ElevenLabs API key");
   }
 
   const client = new ElevenLabsClient({
-    apiKey: ELEVENLABS_API_KEY
+    apiKey: key
   });
 
   const subscription = await client.user.subscription.get();

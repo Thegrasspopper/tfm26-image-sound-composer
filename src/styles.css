@@ -807,3 +807,79 @@ audio {
     display: none;
   }
 }
+
+/* API Keys Modal */
+.api-keys-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.api-keys-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.api-keys-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.api-keys-modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.api-keys-modal-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.api-keys-modal-hint code {
+  background: #f0f0f0;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+.api-keys-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.api-keys-input {
+  padding: 8px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.api-keys-input:focus {
+  border-color: #212121;
+}
+
+.api-keys-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
