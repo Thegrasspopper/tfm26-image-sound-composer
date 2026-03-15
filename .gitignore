@@ -1,8 +1,0 @@
-node_modules
-dist
-.env
-.env.local
-/.vscode
-package-lock.json
-*.tsbuildinfo
-.env.local
