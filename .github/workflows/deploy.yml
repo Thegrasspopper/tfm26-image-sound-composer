@@ -5,8 +5,23 @@ on:
     branches: [main]
   workflow_dispatch:
 
+<<<<<<< Updated upstream
+=======
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+>>>>>>> Stashed changes
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,14 +29,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm install
 
-      - run: npm run build
+      - name: Build
+        run: npm run build
 
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          path: ./dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
