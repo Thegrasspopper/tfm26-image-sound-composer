@@ -1106,7 +1106,7 @@ export default function App() {
                       <button
                         key={`global-positive-${tag}`}
                         type="button"
-                        className={`badge text-bg-primary${index === 0 ? "" : " tag-removable"}`}
+                        className={`badge text-bg-primary tag-removable`}
                         onClick={() => index === 0 ? undefined : selectedGenres.includes(tag) ? toggleGenre(tag) : removeCustomPositivePrompt(tag)}
                         title={index === 0 ? undefined : "Remove"}
                         style={index === 0 ? { cursor: "default" } : undefined}
@@ -1172,7 +1172,7 @@ export default function App() {
                           <button
                             key={`${selectedItem.id}-pos-${tag}-${index}`}
                             type="button"
-                            className="badge text-bg-primary  tag-removable"
+                            className={`badge text-bg-primary ${index === 0 ? "" : " tag-removable"}`}
                             onClick={() => removeLocalPositiveStyle(tag)}
                             title="Remove"
                           >
