@@ -696,11 +696,14 @@ export default function App() {
     try {
       const response = await fetch(blobUrl);
       const blob = await response.blob();
+      // Force audio/mpeg MIME type — macOS can return text/plain for blob URLs,
+      // which causes the exported data URL to be unloadable as audio.
+      const audioBlob = blob.type === "audio/mpeg" ? blob : new Blob([blob], { type: "audio/mpeg" });
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = reject;
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(audioBlob);
       });
     } catch (error) {
       console.error("Failed to convert audio to data URL:", error);
@@ -909,7 +912,7 @@ export default function App() {
 
               <div className="card">
                 <div className="card-body">
-                  <h1 className="h1 text-primary mb-3">See sound</h1>
+                  <h1 className="h1 text-primary mb-3">Visual rhythms</h1>
                   {status && <div className="alert alert-info py-2 px-3 small mb-2">{status}</div>}
 
                   <div className="row mt-5">
